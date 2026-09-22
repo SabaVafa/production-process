@@ -7,7 +7,6 @@ Thumbs.db
 .claude/
 
 # internal (not part of the delivery)
-metzler-content-briefing.md
 PRESENTATION.md
 
 # dev-facing README — kept locally, hidden from the public repo
