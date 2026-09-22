@@ -1,0 +1,25 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+.claude/
+
+# internal (not part of the delivery)
+metzler-content-briefing.md
+PRESENTATION.md
+
+# dev-facing README — kept locally, hidden from the public repo
+
+# Local servers / logs
+*.log
+
+# large media (kept locally, not in git)
+video/*.mp4
+# except the web-optimized film used by GitHub Pages
+!video/praezision-braucht-zeit-web.mp4
+
+.claude/
+*-spec.md
+PROJECT*.md

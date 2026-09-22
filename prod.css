@@ -1,0 +1,266 @@
+/* ══════════════════════════════════════════════════════════════
+   METZLER · PRODUKTIONSPROZESS  (prod.css)
+   Built strictly on the Metzler Design System (styles-v2.css tokens).
+   Rules: rem-only values (px only in @media), token colors only — no
+   hardcoded hex. Derived shades use color-mix() INLINE from tokens
+   (color-mix held in a custom property does not resolve in all engines,
+   so we never indirect it). Scoped under .prod.
+   ════════════════════════════════════════════════════════════ */
+
+.prod{
+  color: var(--schwarz);
+  --ease: cubic-bezier(.2,.7,.2,1);
+}
+
+.prod-sec{ padding-block: var(--about-section-y); }
+.prod .eyebrow{ display:inline-block; }
+.prod em, .prod .accent{ font-style: normal; color: var(--teal-mint); }
+
+/* ── THE FILM ─────────────────────────────────────────── */
+.prod-film__head{ text-align: center; margin-bottom: var(--about-header-gap); }
+.prod-film__head .eyebrow{ color: var(--teal-mint); }
+.prod-film__head h2{ color: var(--white); }
+.prod-film__head p:not(.eyebrow){ max-width: 58ch; color: color-mix(in srgb, var(--white) 66%, transparent); font-size: var(--text-h4); line-height: 1.5; margin: var(--sp-5) auto 0; }
+.prod-film__frame{ position:relative; border-radius: var(--r-xl); overflow:hidden; aspect-ratio:16/9;
+  background: var(--teal-900); box-shadow: var(--shadow-xl); cursor:pointer; }
+.prod-film__frame video{ width:100%; height:100%; object-fit:cover; display:block; }
+.prod-film__play{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:3; transition: opacity .3s; }
+.prod-film__play span{ width:5.25rem; height:5.25rem; border-radius:50%;
+  background: color-mix(in srgb, var(--white) 16%, transparent);
+  border:.09375rem solid color-mix(in srgb, var(--white) 70%, transparent); backdrop-filter: blur(.5rem);
+  display:flex; align-items:center; justify-content:center; transition: transform .25s var(--ease), background .25s; }
+.prod-film__frame:hover .prod-film__play span{ transform: scale(1.08); background: color-mix(in srgb, var(--white) 28%, transparent); }
+.prod-film__play svg{ width:1.875rem; height:1.875rem; margin-left:.25rem; color: var(--white); }
+.prod-film__frame.playing .prod-film__play{ opacity:0; pointer-events:none; }
+
+/* ── FINALE ───────────────────────────────────────────── */
+.prod-finale{ position:relative; overflow:hidden; color: var(--white); background-color: var(--teal-dark);
+  background-image:
+    radial-gradient(120% 130% at 82% 12%, var(--teal) 0%, transparent 55%),
+    linear-gradient(160deg, var(--teal-dark) 0%, var(--teal-900) 60%, var(--schwarz) 100%); }
+.prod-finale .eyebrow{ color: var(--teal-mint); }
+.prod-finale h2{ color: var(--white); margin:.2rem 0 var(--sp-4); }
+
+@media (prefers-reduced-motion: reduce){
+  .prod-film__play span{ transition:none !important; }
+}
+
+/* ════ About-us alignment supplements ════ */
+.prod-center{ max-width: 56rem; margin-inline:auto; text-align:center; }
+.prod-center .section-sub{ margin-inline:auto; }
+.about-hero__ctas .tlink{ align-self:center; }
+/* craft frames keep a square ratio to match the About-us craft chapters */
+.prod-craft .craft-media__frame{ position:relative; aspect-ratio:1/1; }
+/* dark section: white section title */
+.prod-finale .section-title{ color: var(--white); }
+/* deep-link "Sie sind hier" marker on the current step */
+.craft-chapter.is-here .craft-media__tag{ background: var(--teal-mint); color: var(--teal-dark); }
+.craft-chapter.is-here .craft-media__tag::after{ content:" · Sie sind hier"; }
+
+/* ════ FAQ + Contact (ported from Home page · same tokens) ════ */
+.faq__inner { display: grid; grid-template-columns: 1fr 1.6fr; gap: var(--sp-16); }
+.faq__list { display: flex; flex-direction: column; gap: 0; }
+.faq__item { border-bottom: .0625rem solid var(--graphite-300); position: relative; transition: background 0.18s ease; }
+.faq__item:first-child { border-top: .0625rem solid var(--graphite-300); }
+.faq__item:hover { background: color-mix(in srgb, var(--black) 1.5%, transparent); }
+.faq__item[open] { background: color-mix(in srgb, var(--teal) 2.5%, transparent); }
+.faq__item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: .1875rem; background: var(--teal); transform: scaleY(0); transform-origin: center; transition: transform 0.25s ease; }
+.faq__item[open]::before { transform: scaleY(1); }
+.faq__q { width: 100%; display: flex; justify-content: space-between; align-items: center; text-align: left; padding: var(--sp-6) var(--sp-5); font-size: var(--text-h4); font-weight: 700; color: var(--schwarz); gap: var(--sp-6); cursor: pointer; transition: color 0.18s ease; list-style: none; }
+.faq__q::-webkit-details-marker { display: none; }
+.faq__item[open] .faq__q { color: var(--teal); }
+/* frameless drop-arrow (matches the category page) */
+.faq__q-icon { flex: 0 0 auto; width: 1.5rem; height: 1.5rem; display: grid; place-items: center; background: none; border: 0; border-radius: 0; color: var(--graphite-600); transition: color 0.2s ease; }
+.faq__q-icon svg { width: 1.5rem; height: 1.5rem; transition: transform 0.2s ease; }
+.faq__item:hover .faq__q-icon { color: var(--teal); }
+.faq__item[open] .faq__q-icon { background: none; border: 0; color: var(--teal); }
+.faq__item[open] .faq__q-icon svg { transform: scaleY(-1); }
+.faq__a { padding: 0 var(--sp-5) var(--sp-6); color: color-mix(in srgb, var(--black) 72%, transparent); line-height: 1.7; max-width: 65ch; font-size: var(--text-body); }
+.faq__support { background: var(--paper-white); border: .0625rem solid var(--graphite-300); border-radius: var(--r-l); padding: var(--sp-8); align-self: start; position: sticky; top: 6.875rem; }
+.faq__support h3 { font-size: var(--text-h3); font-weight: 700; color: var(--schwarz); letter-spacing: -0.01em; }
+.faq__support p { margin-top: var(--sp-3); color: color-mix(in srgb, var(--black) 68%, transparent); font-size: var(--text-body-sm); line-height: 1.6; }
+.faq__support .btn { margin-top: var(--sp-6); width: 100%; justify-content: center; }
+.faq__phone { margin-top: var(--sp-6); padding: var(--sp-5); background: var(--white); border-radius: var(--r-m); border: .0625rem solid var(--graphite-300); font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb, var(--black) 55%, transparent); font-weight: 600; }
+.faq__phone strong { display: block; color: var(--teal); font-size: var(--text-h3); font-weight: 700; letter-spacing: -0.01em; margin-top: .375rem; text-transform: none; }
+.faq__phone-hours { display: block; margin-top: .375rem; font-size: var(--text-caption); font-weight: 500; letter-spacing: 0; text-transform: none; color: color-mix(in srgb, var(--black) 55%, transparent); }
+@media (max-width: 767px){
+  .faq__inner { display: flex; flex-direction: column; }
+  .faq__inner > *:first-child { order: 2; }
+  .faq__inner > *:last-child { order: 1; }
+  .faq__support { position: static; }
+}
+
+/* ════ Hero: full-bleed black banner ════ */
+.prod .about-hero{ background: var(--schwarz); }
+/* hero width now handled by .container (matches About us proportions) */
+.prod .about-hero__copy-col, .prod .about-hero__photo-col{ background: var(--schwarz); }
+.prod .about-hero h1 span{ display:block; }
+/* Hero copy block: pin to the full measure (33.75rem = 540px) so the text block
+   and its equal-width CTAs match the About-us hero exactly. The shared style.css
+   only sets a max-width; the About-us copy is long enough to reach it, but this
+   page's shorter copy would otherwise shrink-wrap narrower (~503px) and read as
+   inconsistent. Stays fluid below the cap on tablet/mobile. */
+.prod .about-hero__copy{ width: min(33.75rem, 100%); }
+/* Even hero rhythm on desktop: the shared style.css only equalises the
+   headline→chips and chips→sub gaps at ≥1536px; below that the base rules give
+   an uneven 32px / 19px pair. Apply the same balanced spacing across the whole
+   desktop split so the two gaps read consistent — and it keeps the copy block
+   tall enough that the centered block still lines up with the breadcrumb like
+   About us. (Stacked layout ≤1279px keeps the style.css flow spacing.) */
+/* Hero rhythm on desktop. About-us applies its balanced hero spacing
+   (gap:0, sub margin, zeroed CTA top margin) across the desktop split, but
+   this page's style.css only switches it on at ≥1536px — below that the base
+   rules leave an uneven pair of gaps AND a stray 40px above the CTAs. Apply
+   the About-us recipe across the whole split so the block height (and the
+   breadcrumb alignment) matches — with one refinement: the headline→chips and
+   chips→subtitle gaps are set to read EQUAL. Equal margins don't look equal
+   here (the h1's trailing leading sits below its trimmed box, shrinking the
+   gap under it; the sub's leading sits above its text, growing the gap over
+   it), so the headline gets a little more and the chips a little less. Their
+   sum (60px) equals About-us's (30+30) so the block height is unchanged. */
+@media (min-width: 1280px){
+  .prod .about-hero__copy{ gap: 0; }
+  .prod .about-hero__copy h1{ margin: 0 0 35px; }
+  .prod .about-hero__copy .about-hero__chips{ margin: 0 0 25px; }
+  .prod .about-hero__copy .about-hero__sub{ margin: 0 0 44px; }
+  .prod .about-hero__ctas{ margin-top: 0; }
+}
+/* hero: inset the image from the right edge to match the text's left padding */
+.prod .about-hero__photo-col{ padding-right: clamp(1.5rem, 5vw, 7.25rem); }
+/* Single hero CTA sizes to its content (the About-us pair uses flex:1 1 0 to
+   fill the row; a lone button would otherwise stretch full-width like a bar).
+   On mobile the stacked full-width treatment still applies. */
+.prod .about-hero__ctas .btn:only-child{ flex: 0 0 auto; }
+
+/* ════ About-us alternating section backgrounds (white ↔ gray) ════ */
+.prod .prod-bg-soft{ background: var(--paper-white); }
+.prod .prod-bg-white{ background: var(--white); }
+
+/* Film section on light bg */
+.prod-film.prod-bg-white .eyebrow{ color: var(--text-muted); }
+.prod-film.prod-bg-white .prod-film__head h2{ color: var(--schwarz); }
+.prod-film.prod-bg-white .prod-film__head p:not(.eyebrow){ color: var(--schwarz); }
+
+/* Finale section on light bg */
+.prod-finale.prod-bg-white{ color: var(--schwarz); }
+.prod-finale.prod-bg-white .eyebrow{ color: var(--teal); }
+.prod-finale.prod-bg-white .section-title{ color: var(--schwarz); }
+
+/* hero: restore text left/right padding on the copy column (full-bleed bg, inset text) */
+.prod .about-hero__copy-col{ padding-inline: clamp(1.5rem, 5vw, 7.25rem); }
+/* (mobile keeps the style.css break-out so the image runs edge-to-edge) */
+/* kill any stray horizontal-overflow strip on the right edge (clip is sticky-safe) */
+html{ overflow-x: clip; }
+
+/* FAQ on gray section: keep the support/contact card white so it stands out */
+.faq.prod-bg-soft .faq__support{ background: var(--white); }
+
+/* ════ Social Proof — selective reviews ════ */
+.prod-reviews__head{ max-width: 47.5rem; margin: 0 auto var(--about-header-gap); text-align: center; }
+.faq .section-title{ margin-bottom: var(--about-header-gap); }
+.prod-reviews__head .eyebrow{ color: var(--text-muted); }
+.prod-reviews__head p:not(.eyebrow){ margin: var(--sp-4) auto 0; color: var(--schwarz); font-size: var(--text-h4); line-height: 1.5; max-width: 52ch; }
+.prod-reviews__grid{ display: grid; grid-template-columns: 1fr; gap: var(--sp-6); }
+@media (min-width: 720px){ .prod-reviews__grid{ grid-template-columns: repeat(3, 1fr); } }
+
+/* hero: clip to itself as a right-edge-strip guard */
+.prod .about-hero{ overflow: hidden; }
+
+/* ════ Hero — black band (section) with the content contained via .container, matching the About us page ════ */
+/* Breadcrumb (About-us approach): overlaid on the hero band, light-on-dark */
+.prod .about-hero{ position: relative; }
+.crumb{ position: absolute; top: 0; left: 0; right: 0; z-index: 4; background: transparent; padding-block: 1rem; pointer-events: none; }
+.crumb .container{ pointer-events: none; }
+.crumb ol{ display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-body-sm); color: color-mix(in srgb, var(--white) 65%, transparent); margin: 0; padding: 0; list-style: none; width: max-content; pointer-events: auto; text-shadow: 0 .0625rem .125rem color-mix(in srgb, var(--black) 35%, transparent); }
+.crumb a{ color: color-mix(in srgb, var(--white) 65%, transparent); text-decoration: none; }
+.crumb a:hover{ color: var(--white); }
+.crumb li{ display: inline-flex; align-items: center; }
+.crumb li svg{ width: .875rem; height: .875rem; color: color-mix(in srgb, var(--white) 45%, transparent); }
+.crumb [aria-current]{ color: var(--white); font-weight: 500; }
+/* mobile/tablet: the hero stacks with the image on top, so instead of overlaying
+   the breadcrumb on the photo, give it its own solid bar above the image
+   (guaranteed contrast, no scrim needed). Desktop keeps the overlaid breadcrumb. */
+@media (max-width: 1279px){
+  .crumb{ position: static; pointer-events: auto; }
+  .crumb .container{ pointer-events: auto; }
+}
+.prod .about-hero__copy-col{ padding-inline: 0; }
+.prod .about-hero__photo-col{ padding-right: 0; border: 0; }
+
+/* navbar (journey chrome) back to white */
+.prod-craft{ --msty-bg: var(--white); }
+.prod-craft .msty__chrome{ background: var(--white); }
+
+/* finale CTA: standard header spacing + Home/About-us centered-button width */
+.prod-finale .prod-finale__cta{ margin-top: var(--sp-8); width: clamp(16.25rem, 100%, 21.75rem); }
+
+/* ════ Film player: bigger center play + controls + chapter navbar ════ */
+.prod-film__play{ background: none; border: none; cursor: pointer; padding: 0; }
+.prod-film__play span{ width: 7rem; height: 7rem; }
+.prod-film__play svg{ width: 2.75rem; height: 2.75rem; }
+
+/* ── Control bar: its own surface, docked directly under the film, always on ── */
+.prod-film__stage{ position: relative; }
+.prod-film__nav{ position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: color-mix(in srgb, var(--schwarz) 34%, transparent); -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%); border: none; border-top: .0625rem solid color-mix(in srgb, var(--white) 22%, transparent); border-radius: 0 0 var(--r-xl) var(--r-xl); box-shadow: 0 -.25rem 1.5rem color-mix(in srgb, var(--black) 22%, transparent); padding: clamp(.8rem, 2vw, 1.1rem) clamp(1rem, 2.5vw, 1.5rem); color: var(--white); }
+
+/* — scrub rail (click / drag / keyboard, with buffered track, ticks & time tooltip) — */
+.prod-film__scrub{ position: relative; height: .3125rem; border-radius: var(--r-pill); background: color-mix(in srgb, var(--white) 18%, transparent); cursor: pointer; touch-action: none; margin-bottom: .9rem; transition: height .15s ease; }
+.prod-film__scrub:hover, .prod-film__scrub:focus-visible{ height: .5rem; }
+.prod-film__scrub:focus-visible{ outline: none; box-shadow: 0 0 0 .125rem color-mix(in srgb, var(--teal-mint) 70%, transparent); }
+.prod-film__buffer, .prod-film__fill{ position: absolute; top: 0; left: 0; height: 100%; width: 0; border-radius: inherit; }
+.prod-film__buffer{ background: color-mix(in srgb, var(--white) 16%, transparent); }
+.prod-film__fill{ background: var(--teal-mint); }
+.prod-film__fill::after{ content: ''; position: absolute; right: 0; top: 50%; width: .85rem; height: .85rem; border-radius: 50%; background: var(--teal-mint); box-shadow: 0 .0625rem .25rem color-mix(in srgb, var(--schwarz) 45%, transparent); transform: translate(50%, -50%) scale(0); transition: transform .15s ease; }
+.prod-film__scrub:hover .prod-film__fill::after, .prod-film__scrub:focus-visible .prod-film__fill::after{ transform: translate(50%, -50%) scale(1); }
+.prod-film__tick{ position: absolute; top: 50%; width: .125rem; height: .5rem; margin-left: -.0625rem; transform: translateY(-50%); background: color-mix(in srgb, var(--black) 35%, var(--white)); border-radius: var(--r-s); pointer-events: none; }
+.prod-film__tip{ position: absolute; bottom: calc(100% + .5rem); left: 0; transform: translateX(-50%); padding: .15rem .45rem; border-radius: var(--r-s); background: var(--schwarz); color: var(--white); font-size: .72rem; font-variant-numeric: tabular-nums; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; }
+.prod-film__scrub:hover .prod-film__tip{ opacity: 1; }
+
+/* — transport row — */
+.prod-film__bar{ display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .9rem; }
+.prod-film__cluster{ display: flex; align-items: center; gap: .5rem; }
+.prod-film__ctrl{ width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border-radius: 50%; background: color-mix(in srgb, var(--white) 8%, transparent); border: .0625rem solid color-mix(in srgb, var(--white) 16%, transparent); color: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, transform .2s; }
+.prod-film__ctrl:hover{ background: color-mix(in srgb, var(--white) 18%, transparent); transform: translateY(-.0625rem); }
+.prod-film__ctrl svg{ width: 1.2rem; height: 1.2rem; }
+.prod-film__time{ margin-left: .35rem; font-size: var(--text-caption); font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--white) 70%, transparent); }
+.prod-film__time b{ color: var(--white); font-weight: 600; }
+.prod-film__time-sep{ margin: 0 .3rem; opacity: .5; }
+
+/* — chapters spread edge-to-edge: minimal tabs with a timeline-style underline — */
+.prod-film__chapters{ display: flex; justify-content: space-between; gap: .25rem; border-top: .0625rem solid color-mix(in srgb, var(--white) 10%, transparent); padding-top: .7rem; }
+.prod-film__chapter{ flex: 1 1 0; min-width: 0; position: relative; display: flex; align-items: baseline; justify-content: center; gap: .45rem; background: none; border: none; padding: .15rem .4rem .5rem; cursor: pointer; color: color-mix(in srgb, var(--white) 55%, transparent); font-size: var(--text-caption); letter-spacing: .01em; white-space: nowrap; transition: color .25s; }
+.prod-film__chapter b{ font-weight: 700; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--white) 38%, transparent); transition: color .25s; }
+.prod-film__chapter span{ overflow: hidden; text-overflow: ellipsis; }
+.prod-film__chapter::after{ content: ''; position: absolute; left: 50%; bottom: 0; width: 0; height: .125rem; border-radius: var(--r-pill); background: var(--teal-mint); transform: translateX(-50%); transition: width .25s ease; }
+.prod-film__chapter:hover{ color: var(--white); }
+.prod-film__chapter:hover b{ color: color-mix(in srgb, var(--white) 78%, transparent); }
+.prod-film__chapter:hover::after{ width: 1.25rem; }
+.prod-film__chapter.is-active{ color: var(--white); }
+.prod-film__chapter.is-active b{ color: var(--teal-mint); }
+.prod-film__chapter.is-active::after{ width: 1.75rem; }
+
+/* — fullscreen: center the film, dock the bar over its bottom — */
+.prod-film__stage:fullscreen{ display: flex; flex-direction: column; justify-content: center; background: var(--black); width: 100%; height: 100%; }
+.prod-film__stage:fullscreen .prod-film__frame{ border-radius: 0; aspect-ratio: auto; flex: 1 1 auto; min-height: 0; box-shadow: none; }
+.prod-film__stage:fullscreen .prod-film__nav{ position: absolute; left: 0; right: 0; bottom: 0; border: none; border-radius: 0; background: color-mix(in srgb, var(--black) 45%, transparent); -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%); box-shadow: none; }
+
+.prod-film__play:focus-visible, .prod-film__ctrl:focus-visible, .prod-film__chapter:focus-visible{ outline: .125rem solid var(--teal-mint); outline-offset: .1875rem; }
+@media (max-width: 600px){ .prod-film__chapter span{ display: none; } .prod-film__chapter{ flex: 0 0 auto; } .prod-film__chapters{ justify-content: space-between; } }
+
+/* ── Mobile film controls: the glass bar was swallowing ~77% of a phone-size
+   video. Strip to essentials — hide the chapter tabs (too small to tap; the
+   scrub ticks show progress and the full 6-step journey is right below) and
+   slim the scrub + single control row so the footage stays the hero. ── */
+@media (max-width: 767px){
+  .prod-film__chapters{ display: none; }
+  .prod-film__play span{ width: 3.5rem; height: 3.5rem; }
+  .prod-film__play svg{ width: 1.375rem; height: 1.375rem; }
+  .prod-film__nav{ padding: .5rem .7rem .6rem; }
+  .prod-film__scrub{ height: .25rem; margin-bottom: .55rem; }
+  .prod-film__scrub:hover, .prod-film__scrub:focus-visible{ height: .375rem; }
+  .prod-film__bar{ margin-bottom: 0; gap: .5rem; }
+  .prod-film__cluster{ gap: .4rem; }
+  .prod-film__ctrl{ width: 2.1rem; height: 2.1rem; }
+  .prod-film__ctrl svg{ width: 1rem; height: 1rem; }
+  .prod-film__time{ font-size: var(--text-caption); margin-left: .25rem; }
+}

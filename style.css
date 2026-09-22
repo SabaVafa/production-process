@@ -1,0 +1,3020 @@
+/* =========================================================
+   About page — section styles.
+   Loads AFTER styles-v2.css; section padding, typography
+   (.section-title, .eyebrow, .section-sub) and buttons (.btn*)
+   come from the homepage system. This file only adds the
+   About-specific layouts, scoped under .about / .about-*.
+   ========================================================= */
+
+.about{ color: var(--schwarz); }
+.about p{ line-height: var(--lh-body); margin: 0 0 1em; }
+
+/* Guard against sub-pixel / 100vw horizontal overflow (e.g. the shared
+   fixed mobile-nav overlay measures 100vw incl. scrollbar). `clip` kills
+   the stray horizontal scrollbar without creating a scroll container, so
+   the locations carousel and the sticky stories chrome keep working. */
+html, body{ overflow-x: clip; }
+
+/* On-dark variant of the homepage eyebrow */
+.eyebrow--on-dark{ color: rgba(255,255,255,.85); }
+
+/* ─────────────────────────────────────────────────────────
+   RHYTHM NORMALIZATION (about page)
+   Single source of truth for section + header spacing so
+   every section breathes at the same rate. 8px-based scale.
+   ───────────────────────────────────────────────────────── */
+:root{
+  --about-section-y: clamp(56px, 6vw, 88px);   /* section block padding */
+  --about-header-gap: clamp(32px, 4vw, 48px);  /* header → content */
+  /* Background palette — duo-tone rhythm.
+     White = brand-showcase sections; soft = human-voice sections. */
+  --about-bg-white: #fff;
+  --about-bg-soft:  #F5F6FA;  /* matches homepage --paper-white — cool, engineered */
+  --text-muted: #6a6a6a;      /* muted caption/metadata ink (passes AA on white) */
+}
+/* ─────────────────────────────────────────────────────────
+   BACKGROUND RHYTHM — "statement → proof" alternation.
+   Every odd (white) section is a brand statement;
+   every even (soft) section is its supporting voice/proof.
+   ───────────────────────────────────────────────────────── */
+/* Soft (gray) sections — strict alternating rhythm down the page:
+   hero W · stats W · trustbar G · story W · pillars G · craft W ·
+   reviews G · newsletter W · closing G · footer. */
+main.about .trustbar,
+main.about .about-pillars,
+main.about .about-stance,
+main.about .reviews,
+main.about .about-closing{ background: var(--about-bg-soft); }
+/* Reviews head: eyebrow above, title + rating share a centered row.
+   Putting the title in its own row (separate from the eyebrow) lets
+   align-items: center actually center the rating against the title,
+   not against the eyebrow+title stack. */
+main.about .reviews__head{
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sp-2);
+}
+main.about .reviews__head-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-8);
+  width: 100%;
+}
+main.about .reviews__head-text{ min-width: 0; }
+main.about .reviews__rating{ flex-shrink: 0; }
+@media (max-width: 1023px){
+  main.about .reviews__head-row{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
+  }
+}
+/* Inline span inside the reviews .section-title — small muted count
+   sits next to the bold title. vertical-align + top nudge centers it
+   within the title's x-height band so "n" of "Bewertungen" lines up
+   with "n" of "Kunden". */
+.reviews__rating-count{
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.55);
+  letter-spacing: 0;
+  margin-left: 4px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+}
+/* Apply unified section padding to every .section on the About page
+   (overrides styles-v2.css default of 80px/64px). Sections with custom
+   padding declared later in this file still win where intentional. */
+main .section{ padding-block: var(--about-section-y); }
+
+/* Section-header layout helper (centers title + sub) */
+.about-section-header{
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto var(--about-header-gap);
+}
+.about-section-header .section-sub{ margin-left: auto; margin-right: auto; }
+
+/* Brand pattern: accent inside any section-title stays the same color
+   as the rest of the title — upright, bold, inherits color. Single
+   source of truth — every section's "Heading. <i>accent.</i>" works. */
+main.about .section-title i{
+  font-style: normal;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Soft alternating-section background, using homepage token */
+.about-soft{ background: var(--paper-white); }
+
+/* Centered italic hint line under a section */
+.about-hint{
+  color: var(--text-muted);
+  font-size: var(--text-body-sm);
+  text-align: center;
+  margin-top: var(--sp-6);
+  font-style: italic;
+}
+.about-hint a{ color: var(--teal); text-decoration: underline; }
+
+/* ============== SECTION 1 — HERO (Unified Scene, full-bleed) ============== */
+.about-hero{
+  /* Image runs flush to the band's top/bottom edges (no vertical inset). */
+  padding-block: 0;
+  padding-inline: 0;
+  /* Full-bleed dark band; the hero content sits on the page grid (.container)
+     so the copy aligns with the nav, and the photo stays contained (sharp). */
+  background: #1A171B;
+}
+
+/* ─── Primary scene — edge-to-edge single image at natural aspect ─── */
+/* Strategy: panel locks to the image's exact aspect ratio (3840 × 1654 ≈
+   2.32 : 1), so the entire architectural scene shows with zero cropping
+   at every desktop / tablet width. Banner grows taller than the previous
+   440 px (about 827 px at a 1920 px viewport) — that's the deliberate
+   trade-off chosen over the cropped/zoomed look. */
+/* 2-column hero: solid dark copy column on the left (45 %),
+   building image on the right (55 %). High-end agency split-screen. */
+.about-hero__primary{
+  position: relative;
+  width: 100%;
+  display: grid;
+  /* Dark copy panel tracks ~42% on normal screens but caps at 760px, so on
+     wide monitors it hugs the (540px-capped) copy instead of leaving the
+     text floating in a sea of dark space. The image takes the rest. */
+  grid-template-columns: min(calc(44% + 16px), 660px) 1fr;
+  gap: clamp(24px, 3vw, 56px);
+  aspect-ratio: 3.4 / 1.2;
+  align-items: stretch;
+  background: transparent;
+  overflow: visible;
+}
+
+/* Left column — anthracite / dark slate gray.
+   flex-direction: column + justify-content: center vertically centers
+   the copy block reliably within the column. Hairline divider on the
+   right edge gives the column boundary a deliberate geometric edge
+   rather than a happenstance one where image meets text. */
+.about-hero__copy-col{
+  /* Transparent — the dark section shows through. No padding: the copy now
+     starts at the container's content edge, so it lines up with the nav. */
+  background: transparent;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+  align-self: stretch;
+  box-sizing: border-box;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Right column — the building photo as a premium, contained showcase:
+   rounded and lifted off the dark band with a crisp edge + deep shadow.
+   It fills (maximises) its grid column and downscales sharp on big screens. */
+.about-hero__photo-col{
+  position: relative;
+  padding: 0;
+  box-sizing: border-box;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-inline: 0;
+}
+.about-hero__photo{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 700ms cubic-bezier(.2, .7, .2, 1);
+}
+@media (hover: hover){
+  .about-hero__photo-col:hover .about-hero__photo{ transform: scale(1.05); }
+}
+
+/* ── Signature page-entrance choreography ─────────────────────────────────
+   On load the copy rises in a refined stagger (headline line-by-line) while
+   the framed photos scatter into place one after another. */
+@keyframes heroRise{ from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+.about-hero__kicker{ animation: heroRise 820ms cubic-bezier(.2,.7,.2,1) 80ms both; }
+.about-hero__copy h1 span{ display: block; animation: heroRise 880ms cubic-bezier(.2,.7,.2,1) both; }
+.about-hero__copy h1 span:nth-child(1){ animation-delay: 180ms; }
+.about-hero__copy h1 span:nth-child(2){ animation-delay: 280ms; }
+.about-hero__copy .about-hero__chips{ animation: heroRise 820ms cubic-bezier(.2,.7,.2,1) 420ms both; }
+.about-hero__copy .about-hero__sub{ animation: heroRise 820ms cubic-bezier(.2,.7,.2,1) 520ms both; }
+.about-hero__copy .about-hero__ctas{ animation: heroRise 820ms cubic-bezier(.2,.7,.2,1) 620ms both; }
+
+/* The building photo fades + lifts in alongside the copy. */
+.about-hero__photo-col{ animation: heroRise 1000ms cubic-bezier(.2,.7,.2,1) both; }
+
+@media (prefers-reduced-motion: reduce){
+  .about-hero__kicker,
+  .about-hero__copy h1 span,
+  .about-hero__copy .about-hero__chips,
+  .about-hero__copy .about-hero__sub,
+  .about-hero__copy .about-hero__ctas,
+  .about-hero__photo-col{
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Container that holds the copy block, vertically centered over the image */
+.about-hero__copy-wrap{
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding-block: var(--sp-10);
+}
+
+/* Base overlay — light, only soft directional darkening */
+.about-hero__overlay{
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.10) 30%, rgba(0,0,0,0) 55%);
+  z-index: 1;
+}
+
+/* No scrim — copy sits directly on the flat gray field. White text on
+   #6A6F74 ≈ 5 : 1 contrast, passes WCAG AA for body text. */
+.about-hero__copy-wrap{
+  position: relative;
+  z-index: 2;
+}
+
+.about-hero__copy{
+  position: absolute;
+  top: 50%;
+  /* Flush to the column's left edge, which is the container's content edge —
+     so the copy starts exactly where the nav logo does. */
+  left: 0;
+  right: auto;
+  transform: translateY(-50%);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin-block: 0;
+  /* Cap the copy width so on wide screens the text fills its measure and the
+     equal-width CTAs stay proportional to it (instead of stretching the full
+     column and reading as loose, stacked rows). */
+  max-width: 540px;
+}
+.about-hero__copy > *{ margin: 0; }
+/* Editorial kicker — uppercase label that gives the headline a premium
+   lead-in. */
+.about-hero__kicker{
+  margin: 0 0 var(--sp-5);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+.about-hero__copy h1{
+  margin: 0 0 calc(var(--sp-6) - 5px);
+  text-box-trim: trim-end;
+  text-box-edge: cap alphabetic;
+}
+.about-hero__copy .about-hero__chips,
+.about-hero__copy .hero-banner__chips{ margin: 0 0 calc(var(--sp-6) - 5px); }
+
+/* H1 — slightly reduced font-size cap so the headline reliably fits
+   into 2 lines at common viewport widths (was wrapping to 3 lines at
+   1440 px or below). */
+.about-hero h1{
+  color: var(--white);
+  font-size: var(--text-display);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--sp-8);
+}
+.about-hero h1 em{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--teal-mint);
+}
+
+/* Stats row — three small number-tiles between the H1 and the sub.
+   Lifts the numbers out of the dense fact-string and gives them their
+   own typographic moment, in the spirit of premium brand heroes. */
+.about-hero__stats{
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: var(--sp-10);
+  margin: 0 0 var(--sp-8);
+}
+.about-hero__stat{
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.about-hero__stat b{
+  font-size: clamp(20px, 1.6vw, 24px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.about-hero__stat span{
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+/* Sub — matched to homepage .hero-banner__body */
+.about-hero__sub{
+  margin: 0 0 var(--sp-8);
+  font-size: var(--text-body);
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* CTAs — buttons size to content + padding so increased side padding
+   is actually visible (was invisible when buttons were 1fr-fill). */
+.about-hero__ctas{
+  margin-top: var(--sp-10);
+  display: flex;
+  gap: var(--sp-4);   /* matches .hero-banner__chips gap above */
+  flex-wrap: wrap;
+}
+.about-hero__ctas .btn{
+  box-sizing: border-box;
+  /* Equal width: both CTAs grow to fill the same flex-basis,
+     so they read as a balanced pair regardless of label length. */
+  flex: 1 1 0;
+  min-width: 0;
+}
+/* Arrow icon inside the primary CTA — sized to match the homepage's
+   .btn-arrow svg rule but explicit here so it works regardless of cascade. */
+.about-hero__ctas .btn-arrow svg{
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Secondary CTA polish — over the new anthracite, tweak the inset border
+   to a subtle off-white (rgba) instead of pure white. Reads sharper and
+   more premium than a flat white outline. Crisp 1.5 px stroke retained. */
+.about-hero .hero-banner__cta--secondary,
+.about-hero-v2 .hero-banner__cta--secondary{
+  color: #fff;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.78);
+  transition: box-shadow 0.18s ease, background 0.18s ease;
+}
+.about-hero .hero-banner__cta--secondary:hover,
+.about-hero-v2 .hero-banner__cta--secondary:hover{
+  background: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 1.5px #fff;
+}
+
+/* Chips position — homepage places them after the H1; here they sit at
+   the top of the copy block, so kill the inherited margin-top and add
+   breathing room below before the H1 starts. */
+.about-hero__chips{
+  margin-top: 0;
+  margin-bottom: var(--sp-8);
+}
+
+/* Visible focus ring for keyboard users — scoped to About so we don't
+   touch the homepage's button system. */
+.about .btn:focus-visible{
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(0, 109, 117, 0.55);
+}
+
+/* Large screens: drive the copy's vertical rhythm with explicit, even spacing
+   (instead of the mix of inherited margins that reads as a misaligned stack).
+   Equal gaps between headline / chips / sub, with a slightly larger gap before
+   the action buttons so they group as the call-to-action. */
+@media (min-width: 1536px){
+  .about-hero__copy{ gap: 0; }
+  .about-hero__copy h1{ margin: 0 0 30px; }
+  .about-hero__copy .about-hero__chips{ margin: 0 0 30px; }
+  .about-hero__copy .about-hero__sub{ margin: 0 0 44px; }
+  .about-hero__ctas{ margin-top: 0; }
+}
+
+/* ─── Responsive ─── */
+/* Tablet + mobile: the split-screen needs full desktop width to breathe.
+   Below 1280px we stack copy over photo — the fixed 3.4:1 band gets too short
+   for the copy below this width (cramming the headline, chips, sub and CTAs at
+   iPad-Pro-portrait 1024px, and still slightly overflowing at 1200px).
+   Crucially, the desktop layout absolutely-centers the copy inside a
+   fixed-aspect column — so here we return the copy to normal flow and let the
+   column grow with its content. */
+@media (max-width: 1279px){
+  .about-hero__primary{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    aspect-ratio: auto;
+  }
+  .about-hero__copy-col{
+    /* container provides the page inset now */
+    padding-inline: 0;
+    padding-block: 0;
+    border-right: 0;
+  }
+  .about-hero__copy{
+    position: static;
+    transform: none;
+    inset: auto;
+    padding-inline: 0;
+    padding-block: clamp(var(--sp-12), 8vw, var(--sp-16));
+    max-width: none;
+  }
+  .about-hero h1{
+    max-width: none;
+  }
+  /* Full-bleed banner: break out of the container's page inset so the image
+     spans edge-to-edge across the whole stacked range (tablet + phone). */
+  .about-hero__photo-col{
+    aspect-ratio: 16 / 9;
+    min-height: clamp(200px, 52vw, 360px); /* never collapse if aspect-ratio is unsupported */
+    padding: 0;
+    order: -1;            /* photo on top, copy below, when stacked */
+    margin-inline: calc(-1 * clamp(var(--sp-6), 4vw, 56px));
+    border-inline: 0;
+  }
+  .about-hero__photo{ object-position: center 40%; }
+}
+
+@media (max-width: 767px){
+  /* Taller crop on phones; full-bleed is inherited from the stacked range. */
+  .about-hero__photo-col{
+    aspect-ratio: 3 / 2;
+  }
+  /* Consistent vertical breathing room around the text block: drop the grid
+     row-gap (it only padded the top) so the copy's own symmetric padding-block
+     governs both the space above the kicker and below the CTAs. */
+  .about-hero__primary{ row-gap: 0; }
+  .about-hero__copy{ padding-block: 40px; }
+  .about-hero__photo{ object-position: center 35%; }
+  .about-hero h1{ font-size: 2rem; }   /* 32px on phones — matches About us */
+  /* Drop the desktop hard line break — let the sub wrap naturally on phones */
+  .about-hero__sub br{ display: none; }
+  /* CTAs stack full-width — two German labels are too long to sit
+     side-by-side on a phone without truncating. */
+  .about-hero__ctas{
+    flex-direction: column;
+    margin-top: var(--sp-8);
+  }
+  .about-hero__ctas .btn{
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+/* ============== TRUST STRIP (under hero) ============== */
+.about-truststrip{
+  background: var(--white);
+  border-bottom: 1px solid var(--graphite-300);
+  padding-block: var(--sp-8);
+  color: var(--schwarz);
+}
+.about-truststrip__inner{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* Fluid gap so all 6 stats stay on one row down to ~1024px (iPad Pro) —
+     a fixed 86px pushed the last stat onto a second line there. Keeps the
+     airy 86px on large desktops. */
+  gap: clamp(40px, 5vw, 86px);
+}
+.about-truststrip__stat{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.about-truststrip__stat b{
+  font-size: clamp(20px, 1.6vw, 24px);
+  font-weight: 700;
+  color: var(--schwarz);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Entrance animation — fades + lifts on page load, staggered per stat */
+  opacity: 0;
+  transform: translateY(16px);
+  animation: trustStatRise 700ms cubic-bezier(.2, .7, .2, 1) forwards;
+}
+.about-truststrip__stat:nth-child(1) b{ animation-delay: 200ms; }
+.about-truststrip__stat:nth-child(2) b{ animation-delay: 300ms; }
+.about-truststrip__stat:nth-child(3) b{ animation-delay: 400ms; }
+.about-truststrip__stat:nth-child(4) b{ animation-delay: 500ms; }
+.about-truststrip__stat:nth-child(5) b{ animation-delay: 600ms; }
+.about-truststrip__stat:nth-child(6) b{ animation-delay: 700ms; }
+@keyframes trustStatRise{
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){
+  .about-truststrip__stat b{
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+.about-truststrip__stat span{
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+/* Trust strip — the wide 86px flex gap pushes the 6 stats off the row on
+   smaller screens. Same approach as the home page: a single-row swipeable
+   rail with peek + scroll-snap (no scrollbar) instead of a cramped grid. */
+@media (max-width: 1023px){
+  .about-truststrip__inner{
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: var(--sp-8);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;            /* Firefox */
+  }
+  .about-truststrip__inner::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
+  .about-truststrip__stat{
+    flex: 0 0 22%;                    /* ~4 stats visible + a peek on tablet */
+    min-width: 120px;
+    scroll-snap-align: start;         /* start-snap so the last stat doesn't need trailing space to center */
+  }
+}
+@media (max-width: 767px){
+  .about-truststrip__inner{ gap: var(--sp-3); }
+  .about-truststrip__stat{ flex: 0 0 40%; } /* ~2.5 stats visible on mobile */
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Side-arrow controls for horizontally-scrolling strips
+   (truststrip + trustbar). Follows chevron-spec.md §4 (carousel
+   arrows): 40×40 px white button, 4px radius, 1px #DADADA border,
+   24px chevron at 1.5 stroke. Hover = solid teal fill + white icon.
+   Only rendered ≤1023px; .is-hidden toggled by JS at scroll edges.
+   ─────────────────────────────────────────────────────────────── */
+.strip-viewport{ position: relative; }
+.strip-arrow{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #DADADA;
+  background: #fff;
+  color: #1A171B;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  /* Shadow so the arrow reads as a distinct floating button when it sits
+     over a badge card on small screens (where the rail padding is narrower
+     than the arrow), instead of blending into the white card behind it. */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.22s ease;
+}
+.strip-arrow svg{ width: 24px; height: 24px; stroke-width: 1.5; }
+.strip-arrow--prev{ left: 8px; }
+.strip-arrow--prev svg{ transform: rotate(180deg); }
+.strip-arrow--next{ right: 8px; }
+@media (hover: hover){
+  .strip-arrow:hover{ background: #015253; color: #fff; border-color: #015253; }
+}
+.strip-arrow:focus-visible{ outline: none; box-shadow: 0 0 0 3px rgba(1,82,83,0.10); }
+.strip-arrow.is-hidden{ opacity: 0; pointer-events: none; }
+/* Desktop: rails fit, arrows aren't needed. Raised to 1280 because the
+   7-badge trust-bar grid only fits from ~1280px up; below that it's a
+   swipeable rail that needs its arrows (e.g. iPad Pro at 1024). */
+@media (min-width: 1280px){
+  .strip-arrow{ display: none; }
+}
+
+/* Trustbar viewport sits INSIDE the container's padding by default, which
+   pushes its arrows on top of the first/last badge image. Break the viewport
+   out of the padding on the strip's responsive range so the arrows can sit
+   in the section's outer margin instead of over the cards. The rail's
+   own padding-inline (set below, alongside its other responsive rules) puts
+   the badges back inside the page margin. */
+@media (max-width: 1279px){
+  .trustbar__viewport{
+    margin-inline: calc(-1 * clamp(var(--sp-6), 4vw, 56px));
+  }
+  /* The viewport breaks out to the screen edge, so pull the arrows back to
+     the page margin — otherwise they sit hard against the edge where a
+     device / edge shadow clips them. */
+  .trustbar__viewport .strip-arrow--prev{ left: clamp(var(--sp-6), 4vw, 56px); }
+  .trustbar__viewport .strip-arrow--next{ right: clamp(var(--sp-6), 4vw, 56px); }
+  /* Stats strip: align its arrows to the same page margin as the badge rail's —
+     otherwise they sit at the 8px default and overlap the first/last stat. */
+  .about-truststrip .strip-arrow--prev{ left: clamp(var(--sp-6), 4vw, 56px); }
+  .about-truststrip .strip-arrow--next{ right: clamp(var(--sp-6), 4vw, 56px); }
+}
+
+/* ============== SECTION 2 — STORY ============== */
+.about-story__grid{
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(var(--sp-8), 4vw, var(--sp-12));
+  align-items: center;
+}
+.about-story__media img{
+  width: 100%;
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ============== SECTION 2b — TOP SHOP (Computer BILD × Statista) ============== */
+.about-topshop{
+  background: var(--white);
+  /* Hairline separator from the NTV section above — both sit on the
+     same white canvas, so the rule keeps them visually distinct. */
+  border-top: 1px solid var(--graphite-300);
+}
+.about-topshop__grid{
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: clamp(var(--sp-8), 4vw, var(--sp-12));
+  align-items: center;
+}
+/* Image on the right, copy on the left — alternates against the NTV
+   section above (image left) so the two awards zig-zag instead of
+   stacking on the same side. */
+.about-topshop__media{ margin: 0; order: 2; }
+.about-topshop__copy{ order: 1; }
+.about-topshop__hero{
+  width: 100%;
+  display: block;
+  /* Same frame as the NTV stage above: identical aspect-ratio so both
+     images render at the same height, with the matching dark backdrop
+     so the near-square trophy letterboxes seamlessly instead of being
+     cropped. */
+  aspect-ratio: 1800 / 1286;
+  height: auto;
+  object-fit: contain;
+  /* Continues the badge photo's own backdrop into the letterbox bars —
+     a vertical slate gradient sampled from the image's edges (dark top,
+     lighter table-reflection toward the bottom) so the fill reads as one
+     seamless surface rather than black bars beside the image. */
+  background: linear-gradient(180deg,
+    #434d56 0%,
+    #454f57 15%,
+    #49525a 35%,
+    #49525b 55%,
+    #454d55 72%,
+    #555b62 85%,
+    #5f676f 100%);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-lg);
+}
+.about-topshop__media .about-caption{
+  /* Extra top margin offsets the scaled image so the caption doesn't
+     crowd it. */
+  margin-top: clamp(28px, 2.4vw, 40px);
+  text-align: left;
+  font-size: var(--text-body-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.about-topshop__copy .section-sub{ margin-bottom: clamp(var(--sp-5), 2.4vw, var(--sp-6)); }
+.about-topshop__criteria{
+  padding: 0;
+}
+.about-topshop__criteria-title{
+  margin: 0 0 var(--sp-3);
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--schwarz);
+}
+.about-topshop__criteria-list{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-2);
+}
+.about-topshop__criteria-list li{
+  position: relative;
+  padding-left: 18px;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--schwarz);
+}
+.about-topshop__criteria-list li::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--schwarz);
+}
+@media (max-width: 1023px){
+  .about-topshop__grid{
+    grid-template-columns: 1fr;
+    gap: clamp(var(--sp-6), 4vw, var(--sp-8));
+  }
+  /* Stacked: image leads, like every other section. */
+  .about-topshop__media{ order: 1; }
+  .about-topshop__copy{ order: 2; }
+}
+@media (max-width: 640px){
+  .about-topshop__criteria-list{ grid-template-columns: 1fr; }
+}
+
+/* Asymmetric ceremony gallery — one dominant hero + two supporting shots. */
+.about-story__gallery{
+  display: grid;
+  gap: var(--sp-3);
+}
+.about-story__main{
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-lg);
+}
+.about-story__row{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+.about-story__row img{
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-md);
+}
+/* Higher specificity (.about .about-caption) is required — without it
+   the global `.about p { margin: 0 0 1em }` wins and the caption sits
+   flush against the image. */
+.about .about-caption{
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+  margin: var(--sp-3) 0 0;
+  line-height: 1.5;
+}
+
+/* =================================================================
+   NTV Ceremony Carousel — Concept C (Cinematic Slider, pinned copy)
+   Crossfade transitions + subtle Ken-Burns + 6s autoplay.
+   ================================================================= */
+.ntv-carousel{
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.ntv-carousel__stage{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1800 / 1286;
+  overflow: hidden;
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-lg);
+  background: #0e0e10;
+}
+
+/* Event badge — small floating label on the image so the meta row stays clean */
+.ntv-event-label{
+  position: absolute;
+  top: var(--sp-4);
+  left: var(--sp-4);
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: var(--r-s);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.ntv-slide{
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 600ms ease-in-out;
+  pointer-events: none;
+}
+.ntv-slide.is-active{
+  opacity: 1;
+  pointer-events: auto;
+}
+.ntv-slide img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform-origin: center center;
+  /* Heavier overscan to crop out backdrop frames / lighting bars baked
+     into the source photos near their edges. */
+  transform: scale(1.10);
+}
+.ntv-slide.is-active img{
+  animation: ntv-kenburns 4.5s ease-out forwards;
+}
+@keyframes ntv-kenburns{
+  from{ transform: scale(1.12); }
+  to  { transform: scale(1.10); }
+}
+
+/* Meta row — counter + caption + dots.
+   The OUTER row reserves a fixed minimum height (enough for a 2-line
+   caption) so changing text between slides doesn't shift the left
+   column's height — but everything INSIDE vertically centres, so the
+   dots align with the caption text instead of floating at the top. */
+.ntv-carousel__meta{
+  display: flex;
+  align-items: flex-start;   /* counter, caption + dots align to the first line */
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: nowrap;
+}
+.ntv-carousel__meta .about-caption{
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex: 1;
+  min-width: 0;
+}
+.ntv-counter{
+  font-size: var(--text-caption);
+  letter-spacing: .18em;
+  font-weight: 700;
+  color: var(--teal);
+  white-space: nowrap;
+}
+.ntv-counter__sep{ opacity: .5; }
+.ntv-caption-text{
+  font-size: var(--text-body-sm);
+  color: #555;
+  transition: opacity 300ms ease;
+}
+.ntv-caption-text.is-fading{ opacity: 0; }
+/* Desktop: always reserve exactly two lines (and never exceed two) so a caption
+   wrapping to a 2nd line never shifts the image frame above, and keep the dots
+   aligned to the first line. */
+@media (min-width: 768px){
+  .ntv-caption-text{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    line-height: 1.5;
+    min-height: 3em;          /* 2 lines × 1.5 */
+  }
+  .ntv-carousel__dots{ margin-top: 9px; } /* center on the first caption line */
+}
+
+/* Pagination dots — fill bar animates on the active dot over 6 s */
+.ntv-carousel__dots{
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+.ntv-dot{
+  position: relative;
+  width: 32px;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  background: var(--graphite-300);
+  border-radius: var(--r-s);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 200ms ease;
+}
+.ntv-dot:hover{ background: #B5B5B5; }
+.ntv-dot:focus-visible{
+  outline: 2px solid var(--teal);
+  outline-offset: 4px;
+}
+.ntv-dot::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  border-radius: var(--r-s);
+}
+.ntv-dot.is-active::before{
+  animation: ntv-dot-fill 3s linear forwards;
+}
+@keyframes ntv-dot-fill{
+  from{ transform: scaleX(0); }
+  to  { transform: scaleX(1); }
+}
+
+/* Paused state (hover / focus / reduced-motion) — freeze the dot fill
+   and the Ken-Burns zoom mid-animation. */
+.ntv-carousel.is-paused .ntv-dot.is-active::before,
+.ntv-carousel.is-paused .ntv-slide.is-active img{
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ntv-slide{ transition: none; }
+  .ntv-slide.is-active img{ animation: none; transform: none; }
+  .ntv-dot.is-active::before{ animation: none; transform: scaleX(1); }
+}
+
+@media (max-width: 767px){
+  /* Caption text sits on its own line on top; the counter (pagination) drops
+     onto the same row as the dots (progress bar). display:contents lets the
+     counter + text escape .about-caption into this grid. */
+  .ntv-carousel__meta{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "title   title"
+      "counter dots";
+    align-items: center;
+    row-gap: var(--sp-2);
+    column-gap: var(--sp-3);
+  }
+  .ntv-carousel__meta .about-caption{ display: contents; }
+  .ntv-caption-text{ grid-area: title; }
+  .ntv-counter{ grid-area: counter; }
+  .ntv-carousel__dots{ grid-area: dots; justify-self: end; }
+  /* Shrink the floating event badge so it doesn't crowd the photo */
+  .ntv-event-label{
+    top: var(--sp-3);
+    left: var(--sp-3);
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.10em;
+  }
+}
+.about-story__copy{
+  align-self: center;
+  /* The carousel column is taller than the image alone by the meta strip
+     (counter/caption/dots) below it, so plain centering sits the copy ~25px
+     low relative to the photo. Offsetting by the strip height re-centers the
+     copy against the image itself. Reset when the grid stacks (≤1023px). */
+  margin-bottom: calc(42px + var(--sp-2));
+}
+.about-story__copy p:not(.eyebrow){ font-size: var(--text-h4); }
+/* Spacing rhythm — matched to the hero banner's chips → H1 → sub → CTAs.
+   eyebrow → H2 = 20 px, H2 → sub = 20 px (same as banner's chips → H1 → sub). */
+.about .eyebrow{
+  margin-bottom: var(--sp-5);
+  color: var(--text-muted);
+}
+/* Eyebrow line-height must beat the global `.about p{ line-height: var(--lh-body) }`. */
+.about .eyebrow, .about .craft-eyebrow{ line-height: 1.4; }
+/* Uniform eyebrow→title gap = 20px everywhere (sections, chapters, hero kicker).
+   Specificity 0,2,0 beats the global `.about p{ margin: 0 0 1em }` (which was
+   collapsing the 12px-font eyebrows to a 1em/12px gap). */
+.about .eyebrow, .about .craft-eyebrow, .about .about-hero__kicker{ margin-bottom: var(--sp-5); }
+.about .section-sub{ margin-top: var(--sp-5); }
+
+/* Story-section CTA — text link, consistent with the craft/stories links
+   (teal · bold · underlined · hover-fade). */
+.about-story__ctas{
+  margin-top: var(--sp-7);
+  display: flex;
+}
+.about-story__link{
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity 220ms ease;
+}
+.about-story__link:hover{ opacity: 0.75; }
+
+.about-sig{
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--graphite-300);
+}
+.about-sig__line{
+  font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+  font-size: 30px;
+  color: var(--schwarz);
+  margin-bottom: var(--sp-1);
+}
+.about-sig__name{ font-weight: 700; color: var(--schwarz); font-size: var(--text-h4); }
+.about-sig__role{ color: var(--text-muted); font-size: var(--text-body-sm); }
+
+/* ============== SECTION 3 — PILLARS ============== */
+.about-pillars__grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--sp-8), 4vw, var(--sp-16));
+}
+.about-pillars article h3{
+  position: relative;
+  padding-top: var(--sp-5);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  color: var(--schwarz);
+  margin-bottom: var(--sp-3);
+}
+.about-pillars article h3::before{
+  content: "";
+  display: block;
+  width: 42px; height: 3px;
+  background: var(--teal);
+  position: absolute; top: 0; left: 0;
+  border-radius: var(--r-s);
+}
+.about-pillars article p{ font-size: var(--text-body); color: var(--schwarz); }
+
+/* ============== SECTION 3b — KLARE HALTUNG (stance: against vs for) ============== */
+.about-stance__grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(var(--sp-5), 2.4vw, var(--sp-8));
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.stance-card{
+  padding: clamp(var(--sp-6), 2.4vw, var(--sp-8));
+  border-radius: var(--r-l);
+  border: 1px solid transparent;
+}
+.stance-card--against{
+  background: #FAF3EE;
+  border-color: #EFE0D2;
+  --stance-icon: #B8553A;
+}
+.stance-card--for{
+  background: #E7F2EF;
+  border-color: #CFE5DD;
+  --stance-icon: var(--teal);
+}
+.stance-card__title{
+  font-size: var(--text-h4);
+  font-weight: 700;
+  color: var(--schwarz);
+  margin: 0 0 clamp(var(--sp-4), 1.6vw, var(--sp-5));
+}
+.stance-card__list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--sp-3), 1.4vw, var(--sp-4));
+}
+.stance-card__list li{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--schwarz);
+}
+.stance-card__icon{
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--stance-icon);
+}
+@media (max-width: 767px){
+  .about-stance__grid{
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+}
+
+/* ============== FOUNDER'S NOTE (inside Qualität section) ==============
+   Personal letter from the Geschäftsführung. Sits between the sticky
+   Qualität chrome and the first craft chapter as a preamble. Two-column
+   on desktop (portrait left, copy right); stacks on mobile.
+
+   Vertical padding here replaces the .section class padding that the
+   standalone version had — the founder note is now a <div> nested in
+   .about-craft, so it needs its own breathing room. */
+.about-founder{
+  background: var(--white);
+  padding-block: clamp(56px, 6vw, 88px);
+  border-bottom: 1px solid var(--craft-rule);
+}
+.about-founder__inner{
+  display: grid;
+  /* Image sits on the right in the wider 1.1fr column — same size as the
+     flip craft chapters (0.9fr copy / 1.1fr image). Gap matches them too. */
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(48px, 5vw, 96px);
+  align-items: center;
+  /* Fills the container like the other sections — the container is now
+     capped to match the main site (1400px content), so no separate cap is
+     needed and the note lines up edge-to-edge with the rows around it. */
+}
+/* Portrait sits on the right so the founder note opens the zig-zag:
+   founder image right → chapter 1 image left → chapter 2 right … */
+.about-founder__media{ margin: 0; order: 2; }
+/* Same vertical copy padding as .craft-copy so the image-to-text spacing
+   matches the craft chapters (gap + copy padding) on every breakpoint. */
+.about-founder__copy{ order: 1; padding-block: clamp(20px, 3vw, 48px); max-width: 480px; }
+.about-founder__frame{
+  /* Frame matches the craft-chapter frames in this Qualität run: 1:1 ratio,
+     same radius, same layered shadow and white inner hairline border. */
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-l);
+  background: color-mix(in srgb, var(--craft-fg) 6%, #fff);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.06),
+    0 16px 32px rgba(0,0,0,0.08),
+    0 40px 80px rgba(0,0,0,0.10);
+}
+.about-founder__frame::after{
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,0.18);
+  pointer-events: none;
+}
+.about-founder__frame img{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+/* Same scroll-reveal as the craft frames: clip-path wipe + image scale,
+   played when the founder note scrolls into view (.is-visible). */
+.about-founder__frame{
+  clip-path: inset(6% round 8px);
+  transition: clip-path 1100ms cubic-bezier(.2, .7, .2, 1), box-shadow 600ms ease;
+  will-change: clip-path;
+}
+.about-founder__frame img{
+  transform: scale(1.06);
+  transition: transform 1200ms cubic-bezier(.2, .7, .2, 1);
+  will-change: transform;
+}
+.about-founder.is-visible .about-founder__frame{ clip-path: inset(0 round 8px); }
+.about-founder.is-visible .about-founder__frame img{ transform: scale(1); }
+
+/* Same text entrance choreography as the craft chapters: eyebrow → headline →
+   body → signature stagger in as the note scrolls into view. */
+.about-founder__copy .eyebrow{
+  /* Match the craft-eyebrow's tighter gap to the headline (was 20px). */
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 600ms cubic-bezier(.2,.7,.2,1);
+}
+.about-founder__copy .section-title{
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms cubic-bezier(.4,0,.2,1), transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+.about-founder__body{
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 700ms ease, transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+.about-founder__sign{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 700ms cubic-bezier(.2,.7,.2,1);
+}
+.about-founder.is-visible .about-founder__copy .eyebrow{ opacity: 1; transform: translateY(0); }
+.about-founder.is-visible .about-founder__copy .section-title{ opacity: 1; transform: translateY(0); transition-delay: 200ms; }
+.about-founder.is-visible .about-founder__body{ opacity: 0.92; transform: translateY(0); transition-delay: 420ms; }
+.about-founder.is-visible .about-founder__sign{ opacity: 1; transform: translateY(0); transition-delay: 540ms; }
+
+@media (prefers-reduced-motion: reduce){
+  .about-founder *{
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+}
+
+.about-founder__copy .section-title{ margin-bottom: clamp(var(--sp-5), 2.4vw, var(--sp-6)); }
+.about-founder__body{
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.about-founder__body p{
+  font-size: clamp(16px, 1.15vw, 18px);
+  line-height: 1.65;
+  color: var(--schwarz);
+  margin: 0;
+}
+.about-founder__sign{
+  margin-top: clamp(var(--sp-6), 3vw, var(--sp-8));
+  padding-top: clamp(var(--sp-4), 2vw, var(--sp-5));
+  border-top: 1px solid var(--graphite-300);
+}
+.about-founder__signature{
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: clamp(20px, 1.8vw, 24px);
+  font-weight: 400;
+  color: var(--schwarz);
+  line-height: 1.2;
+}
+.about-founder__role{
+  margin: 4px 0 0;
+  font-size: var(--text-body-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+@media (max-width: 1023px){
+  .about-founder__inner{
+    grid-template-columns: 1fr;
+    /* Same stacked gap as the craft chapters so the image-to-copy spacing is
+       consistent across the Qualität run. */
+    gap: clamp(28px, 6vw, 44px);
+    max-width: 640px;
+  }
+  /* Stacked: portrait leads, like every other section. */
+  .about-founder__media{ order: 1; }
+  .about-founder__copy{ order: 2; max-width: none; }
+  .about-founder__frame{ aspect-ratio: 1 / 1; }
+}
+
+/* ============== SECTION 4 — SORTIMENT (BENTO) ============== */
+.about-bento{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-4);
+}
+.about-tile{
+  position: relative;
+  min-height: 360px;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--r-l);
+  overflow: hidden;
+  color: var(--white);
+  display: block;
+  text-decoration: none;
+  transition: transform .25s ease;
+}
+.about-tile:hover{ transform: translateY(-3px); }
+.about-tile::after{
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.72) 100%);
+}
+.about-tile__body{
+  position: absolute; left: 0; right: 0; bottom: 0;
+  z-index: 2;
+  padding: var(--sp-6);
+}
+.about-tile__body h3{
+  color: var(--white);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  margin-bottom: var(--sp-1);
+}
+.about-tile__body p{
+  margin: 0;
+  font-size: var(--text-body-sm);
+  opacity: .92;
+  max-width: 44ch;
+}
+
+.about-bento-secondary{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+.about-tile-sm{
+  display: block;
+  text-decoration: none;
+  color: var(--schwarz);
+  border: 1px solid var(--graphite-300);
+  border-radius: var(--r-l);
+  overflow: hidden;
+  background: var(--white);
+  transition: border-color .15s ease;
+}
+.about-tile-sm img{ height: 120px; width: 100%; object-fit: cover; }
+.about-tile-sm span{
+  display: block;
+  padding: var(--sp-3) var(--sp-3);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+}
+.about-tile-sm:hover{ border-color: var(--teal); }
+
+/* ============== EDITORIAL ASYMMETRIC LAYOUT (Sections 5 + 6) ==============
+   Magazine-spread pattern:
+   - Left column: 2 overlapping images. Small one top-left, large centered one
+     with a white frame layered over it, extending down to the dark block.
+   - Right column: stacked text tiers. Top tier light, bottom tier dark.
+   - Asterisk mark separates the two tiers.
+*/
+.about-editorial.section{
+  background: var(--white);
+}
+.about-editorial__layout{
+  /* Unified gutter — used as column-gap AND as the image→text gap inside the dark block,
+     so all the marked margins/paddings stay visually consistent. */
+  --editorial-gutter: clamp(40px, 5vw, 96px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  column-gap: var(--editorial-gutter);
+  row-gap: 0;
+  grid-template-areas:
+    "visuals top"
+    "bottom  bottom";
+  align-items: start;
+}
+/* Right column stack — holds the top + middle text tiers with a rhythmic gap */
+.about-editorial__top-stack{
+  grid-area: top;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--sp-8), 4vw, var(--sp-12));
+  padding-block: 0 var(--sp-8);
+}
+
+/* ----- LEFT: overlapping image collage ----- */
+.about-editorial__visuals{
+  grid-area: visuals;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+  min-height: 260px;
+}
+.about-editorial__img{
+  margin: 0;
+  overflow: hidden;
+  background: var(--graphite-200, #e8e9eb);
+}
+.about-editorial__img img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Top-left small detail image — width-based sizing with a locked aspect
+   ratio so it stays proportional at every viewport (no thin-strip bug
+   at wide resolutions where the column gets very wide). */
+.about-editorial__img--top{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 68%;
+  /* Cap the size so it stops growing past the container's mid widths — the
+     center portrait is height-capped (600px), so an unbounded top image would
+     keep dropping lower and over-overlap the portrait on large screens. */
+  max-width: 380px;
+  aspect-ratio: 4 / 3;
+  z-index: 1;
+  /* Match the center image's white frame so both photos read as a pair */
+  border: 8px solid var(--white);
+  border-radius: var(--r-l);
+  box-shadow: 0 16px 40px -16px rgba(0,0,0,0.18);
+}
+/* Center large portrait — promoted to a layout-grid item so it can span
+   the visuals row AND the dark-block row. align-self: end pins its bottom
+   to the bottom of the dark block. */
+.about-editorial__img--center{
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: end;
+  justify-self: start;
+  /* Width scales fluidly with the column at normal viewports.
+     max-width caps it so the center doesn't grow into a giant portrait
+     at ultra-wide screens (which would cover too much of the top image). */
+  width: clamp(280px, 82%, 88%);
+  max-width: 560px;
+  margin-left: 12%;
+  /* Taller portrait so its top edge tucks under the top detail image —
+     closes the white gap between the two collage photos on desktop. */
+  aspect-ratio: 3 / 4;
+  max-height: 600px;
+  z-index: 3;
+  border: 8px solid var(--white);
+  border-bottom: 0;
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  box-shadow: 0 16px 40px -16px rgba(0,0,0,0.18);
+}
+.about-editorial__img--center img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ----- RIGHT: stacked text tiers ----- */
+.about-editorial__tier{
+  display: flex;
+  flex-direction: column;
+}
+.about-editorial__tier--top{
+  /* now lives inside .about-editorial__top-stack — no grid-area needed */
+  padding-block: 0;
+  /* Shift left so the gap from the (narrower) top image's right edge to the
+     text matches the rhythm gap used elsewhere in the layout */
+  margin-left: clamp(-220px, -12vw, -80px);
+}
+/* Middle tier — subtle asymmetric offset to the right so it doesn't line up with top tier,
+   creating the editorial rhythm seen in the reference */
+.about-editorial__tier--middle{
+  padding-block: 0;
+  margin-left: clamp(20px, 3vw, 64px);
+  max-width: 46ch;
+}
+.about-editorial__tier--top p,
+.about-editorial__tier--middle p{
+  font-size: var(--text-body-sm);
+  color: var(--graphite-700, #54545C);
+  line-height: 1.6;
+  margin-bottom: var(--sp-3);
+}
+.about-editorial__tier--top h2 i,
+.about-editorial__tier--middle h2 i{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--teal);
+}
+.about-editorial__tier--middle .section-title{
+  font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+  line-height: 1.15;
+  white-space: nowrap;   /* keep "CO₂-neutral - unser Ziel bis 2030" on one line */
+}
+.about-editorial__tier--top p{
+  font-size: var(--text-body-sm);
+  color: var(--graphite-700, #54545C);
+  line-height: 1.6;
+  margin-bottom: var(--sp-3);
+}
+/* Separator mark between tiers */
+.about-editorial__mark{
+  align-self: flex-start;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--schwarz);
+  font-weight: 400;
+  padding-block: var(--sp-6);
+  user-select: none;
+}
+/* Dark high-contrast block for the bottom tier — spans the full container width
+   so the overlapping center image lands partly on top of it */
+.about-editorial__tier--bottom{
+  grid-area: bottom;
+  background: var(--schwarz, #1A171B);
+  color: var(--white);
+  padding-block: clamp(28px, 3vw, 48px);
+  /* Reserve the left ~50% for the overlapping image (image fills the left grid column);
+     text right edge aligns with the container content edge so its outer gap to the
+     viewport equals the page-frame's side padding */
+  padding-left: clamp(var(--sp-10), 50%, 54%);
+  padding-right: 0;
+  border-radius: 0;
+  position: relative;
+  z-index: 1;
+  /* Full-bleed: extend the dark fill past the container to both viewport edges
+     without changing layout or padding. */
+  box-shadow:
+    calc(-1 * (50vw - 50%)) 0 0 0 var(--schwarz, #1A171B),
+    calc(50vw - 50%) 0 0 0 var(--schwarz, #1A171B);
+}
+.about-editorial__tier--bottom > *{
+  max-width: 64ch;
+}
+.about-editorial__tier--bottom .section-title{
+  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+  line-height: 1.15;
+  max-width: 28ch;
+}
+.about-editorial__tier--bottom p{
+  max-width: 64ch;
+}
+.about-editorial__tier--bottom .eyebrow{
+  /* color override removed — inherits .about .eyebrow graphite for consistency */
+}
+.about-editorial__tier--bottom .section-title{
+  color: var(--white);
+}
+.about-editorial__tier--bottom p{
+  font-size: var(--text-body-sm);
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+  margin-bottom: var(--sp-3);
+}
+main.about .about-editorial__tier--bottom .section-title i{
+  color: var(--white);
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* Headings — italic accent on light tier stays teal */
+.about-editorial__tier--top h2 i{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--teal);
+}
+.about-editorial__tier .btn{
+  margin-top: var(--sp-4);
+  align-self: flex-start;
+  width: auto;
+  display: inline-flex;
+}
+
+/* ----- Responsive: stack on tablets ----- */
+@media (max-width: 1023px){
+  .about-editorial__layout{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "visuals"
+      "top"
+      "bottom";
+    gap: var(--sp-10);
+    row-gap: var(--sp-10);
+  }
+  .about-editorial__visuals{
+    aspect-ratio: 4 / 3.2;
+    min-height: 0;
+  }
+  /* Reset the desktop editorial offsets — once the layout is a single
+     column, the negative/positive tier margins push copy off-screen. */
+  .about-editorial__tier--top{ margin-left: 0; }
+  .about-editorial__tier--middle{ margin-left: 0; max-width: none; }
+  .about-editorial__tier--middle .section-title{ white-space: normal; }
+  .about-editorial__tier--bottom{
+    padding-left: clamp(var(--sp-8), 4vw, var(--sp-12));
+    padding-right: clamp(var(--sp-8), 4vw, var(--sp-12));
+  }
+  .about-editorial__img--center{
+    position: relative;
+    grid-column: 1;
+    grid-row: auto;
+    align-self: auto;
+    justify-self: stretch;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    aspect-ratio: 4 / 5;
+  }
+}
+/* Mobile: drop the overlapping top-detail image — at phone widths the
+   68%-wide absolute collage overlaps the portrait and reads as clutter. */
+@media (max-width: 767px){
+  /* Phones: the desktop overlap-collage doesn't fit, so lay the whole section
+     out as a simple stacked column and pair each half with one photo — the
+     top-detail image leads, the center portrait sits with the technical
+     (KONSTRUKTION) tier so that block keeps its image too. */
+  .about-editorial__layout{
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-10);
+  }
+  .about-editorial__visuals{
+    display: block;
+    order: 1;
+    aspect-ratio: auto;       /* size to the image, not an empty reserved box */
+    min-height: 0;
+  }
+  .about-editorial__img--top{
+    display: block;
+    position: relative;       /* leave absolute-overlap mode → normal flow */
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+  .about-editorial__top-stack{ order: 2; }
+  .about-editorial__img--center{
+    order: 3;
+    aspect-ratio: 3 / 4;
+    /* Standalone now (not anchored to the dark block) — restore full frame */
+    border-bottom: 8px solid var(--white);
+    border-radius: var(--r-l);
+  }
+  .about-editorial__tier--bottom{ order: 4; }
+}
+
+/* ==================================================================
+   CRAFT NARRATIVE — same editorial chapter design as Metzler Stories,
+   applied to the brand pillars. Tall two-column scenes (framed image +
+   corner tag · big two-line headline with teal accent · body), alternating
+   sides, on one unified white canvas. Static (no JS entrance gating).
+   ================================================================== */
+.about-craft.section{
+  background: var(--white);
+  position: relative;                          /* anchor for the sticky chrome */
+  padding-top: var(--craft-chrome-h, 72px);    /* reserve space for the chrome */
+  padding-bottom: 0;                            /* chapters own the rest */
+  --craft-fg: #1A1A1A;
+  --craft-muted: rgba(0, 0, 0, 0.55);
+  --craft-rule: rgba(0, 0, 0, 0.12);
+  /* Tokens consumed by the reused .msty__chrome / .msty__tab styling */
+  --msty-bg: var(--white);
+  --msty-fg: #1A1A1A;
+  --msty-muted: rgba(0, 0, 0, 0.55);
+  --msty-rule: rgba(0, 0, 0, 0.12);
+}
+.craft-chapter{
+  padding-block: var(--about-section-y);   /* same rhythm as every section */
+  position: relative;
+}
+.craft-chapter + .craft-chapter{ border-top: 1px solid var(--craft-rule); }
+.craft-chapter__inner{
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(48px, 5vw, 96px);
+  align-items: center;   /* copy centers beside the fixed-ratio image */
+}
+.craft-chapter--flip .craft-chapter__inner{ grid-template-columns: 0.9fr 1.1fr; }
+.craft-chapter--flip .craft-media{ order: 2; }
+.craft-chapter--flip .craft-copy{ order: 1; }
+
+/* Framed image with corner tag — fixed 1:1 ratio so every chapter's frame is
+   identical in size (the source photos are mostly square, so a square frame
+   crops them the least and reads as the cleanest, most consistent grid). */
+.craft-media{ position: relative; }
+.craft-media__frame{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--r-l);
+  background: color-mix(in srgb, var(--craft-fg) 6%, #fff);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.06),
+    0 16px 32px rgba(0,0,0,0.08),
+    0 40px 80px rgba(0,0,0,0.10);
+}
+.craft-media__frame::after{
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,0.18);
+  pointer-events: none;
+}
+.craft-media__frame img{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.craft-media__tag{
+  position: absolute;
+  top: clamp(20px, 2vw, 28px);
+  left: clamp(20px, 2vw, 28px);
+  z-index: 2;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--craft-fg);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(8px);
+  border-radius: 2px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* Copy column — vertically centered to the image */
+.craft-copy{
+  max-width: 480px;
+  align-self: center;
+  padding-block: clamp(20px, 3vw, 48px);
+}
+.craft-eyebrow{
+  margin: 0 0 var(--sp-5);   /* 20px — uniform eyebrow→title gap */
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.craft-headline{
+  margin: 0 0 clamp(20px, 2vw, 28px);
+  font-size: var(--text-display);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  color: var(--craft-fg);
+}
+.craft-headline span{ display: block; }
+.craft-accent{ font-style: normal; color: inherit; }
+/* Tablet + mobile (the chapter stacks vertically below 1024px):
+   let the two phrases flow as one wrapping line instead of forcing
+   a stair-step on widths that don't need it. An em-dash between
+   them reads as the same editorial separator used in section-title
+   pairs. Bigger font-size pushes each wrapped line closer to the
+   column's right edge so the headline fills the horizontal space
+   instead of leaving wide ragged-right whitespace. */
+@media (max-width: 1023px){
+  .craft-headline span{ display: inline; }
+  .craft-headline span:first-child::after{ content: " – "; }
+  /* single-phrase headlines split only for the desktop 2-line layout:
+     join with a plain space (not the editorial dash) when they collapse inline */
+  .craft-headline--plain span:first-child::after{ content: " "; }
+}
+@media (max-width: 767px){
+  .craft-headline{ font-size: 2rem; }
+}
+.craft-body{
+  margin: 0;
+  max-width: 46ch;
+  font-size: clamp(16px, 1.3vw, 20px);
+  line-height: 1.6;
+  color: var(--craft-fg);
+  opacity: 0.92;
+}
+.craft-footer{
+  margin-top: clamp(28px, 3vw, 40px);
+  padding-top: clamp(20px, 2vw, 28px);
+  border-top: 1px solid var(--craft-rule);
+}
+.craft-link{
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity 220ms ease;
+}
+.craft-link:hover{ opacity: 0.75; }
+
+/* Tablet + mobile — stack media over copy */
+@media (max-width: 1023px){
+  .craft-chapter__inner,
+  .craft-chapter--flip .craft-chapter__inner{
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 6vw, 44px);
+    min-height: 0;
+  }
+  .craft-chapter--flip .craft-media{ order: 1; }
+  .craft-chapter--flip .craft-copy{ order: 2; }
+  .craft-copy{ max-width: none; }
+  /* Body's 46ch cap (a desktop reading-measure) leaves wide blank
+     space on stacked layouts where the copy column already spans
+     the full container width — drop the cap so body fills the
+     column like the headline does. */
+  .craft-body{ max-width: none; }
+}
+@media (max-width: 1023px){
+  /* Four longer labels don't fit a fixed row on phones — make the tab strip a
+     single-line horizontal scroller (labels stay on one line, swipe to reveal). */
+  .craft-chrome .msty__tabs{
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 16px;
+  }
+  .craft-chrome .msty__tabs::-webkit-scrollbar{ display: none; }
+  .craft-chrome .msty__tab{ flex: 0 0 auto; }
+  .craft-chrome .msty__tab-name{ white-space: nowrap; }
+}
+
+/* ─── Entrance animations (same choreography as Metzler Stories) ───
+   Resting (pre-reveal) states; .is-visible (added by IntersectionObserver
+   when the chapter scrolls in) plays them. */
+.craft-media__frame{
+  clip-path: inset(6% round 8px);
+  transition: clip-path 1100ms cubic-bezier(.2, .7, .2, 1), box-shadow 600ms ease;
+  will-change: clip-path;
+}
+.craft-media__frame img{
+  transform: scale(1.06);
+  transition: transform 1200ms cubic-bezier(.2, .7, .2, 1);
+  will-change: transform;
+}
+.craft-media__tag{
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 600ms ease 400ms, transform 600ms cubic-bezier(.2,.7,.2,1) 400ms;
+}
+.craft-eyebrow{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 600ms cubic-bezier(.2,.7,.2,1);
+}
+.craft-headline span{
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms cubic-bezier(.4,0,.2,1), transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+.craft-body{
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 700ms ease, transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+.craft-footer{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 700ms cubic-bezier(.2,.7,.2,1);
+}
+
+.craft-chapter.is-visible .craft-media__frame{ clip-path: inset(0 round 8px); }
+.craft-chapter.is-visible .craft-media__frame img{ transform: scale(1); }
+.craft-chapter.is-visible .craft-media__tag{ opacity: 1; transform: translateY(0); }
+.craft-chapter.is-visible .craft-eyebrow{ opacity: 1; transform: translateY(0); }
+.craft-chapter.is-visible .craft-headline span{ opacity: 1; transform: translateY(0); }
+.craft-chapter.is-visible .craft-headline span:nth-child(1){ transition-delay: 200ms; }
+.craft-chapter.is-visible .craft-headline span:nth-child(2){ transition-delay: 300ms; }
+.craft-chapter.is-visible .craft-body{ opacity: 0.92; transform: translateY(0); transition-delay: 420ms; }
+.craft-chapter.is-visible .craft-footer{ opacity: 1; transform: translateY(0); transition-delay: 540ms; }
+
+@media (prefers-reduced-motion: reduce){
+  .craft-chapter *{
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+}
+
+/* ============== SECTION 7 — RESPONSIBILITY ============== */
+.about-responsibility h2 i{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--teal);
+}
+.about-place__hero{
+  margin-block: var(--sp-10) var(--sp-8);
+  border-radius: var(--r-l);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+}
+.about-place__hero img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.about-place__stats{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--sp-6), 3vw, var(--sp-12));
+  padding-block: var(--sp-8);
+  margin-bottom: var(--sp-10);
+  border-block: 1px solid var(--graphite-300);
+}
+.about-place__stats > div{
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.about-place__stats b{
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--schwarz);
+  line-height: 1.1;
+}
+.about-place__stats span{
+  font-size: var(--text-body-sm);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.about-timeline{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--sp-5), 3vw, var(--sp-10));
+  position: relative;
+}
+.about-timeline::before{
+  content: "";
+  position: absolute;
+  top: 34px; left: 8%; right: 8%;
+  height: 2px;
+  background: var(--graphite-300);
+  z-index: 0;
+}
+.about-timeline article{
+  background: var(--white);
+  border: 1px solid var(--graphite-300);
+  border-radius: var(--r-l);
+  padding: var(--sp-8) var(--sp-6);
+  position: relative;
+  z-index: 1;
+}
+.about-timeline__year{
+  display: inline-block;
+  background: var(--teal);
+  color: var(--white);
+  font-weight: 700;
+  font-size: var(--text-body-sm);
+  letter-spacing: .12em;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-s);
+  margin-bottom: var(--sp-5);
+}
+.about-timeline article h3{
+  font-size: var(--text-h3);
+  font-weight: 700;
+  color: var(--schwarz);
+  margin-bottom: var(--sp-3);
+}
+.about-timeline article p{ font-size: var(--text-body); color: var(--schwarz); margin: 0; }
+
+/* ============== SECTION 9 — METZLER STORIES (anchored chapters + parallax) ============== */
+.msty{
+  --msty-bg: var(--about-bg-soft);
+  --msty-fg: #1A1A1A;
+  --msty-muted: rgba(0,0,0,0.55);
+  --msty-rule: rgba(0,0,0,0.12);
+  background: var(--msty-bg);
+  color: var(--msty-fg);
+  position: relative;
+}
+
+/* ─── Sticky chrome at the top of the stories section ─── */
+/* Sentinel — invisible 1px element at section top.
+   When it scrolls out of view, JS pins the chrome via position: fixed.
+   When it scrolls back in, JS unpins. */
+.msty__sentinel{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.msty__chrome{
+  /* Default state — chrome is at the top of the section in normal flow */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-block: clamp(16px, 1.5vw, 24px);
+  background: color-mix(in srgb, var(--msty-bg) 94%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border-bottom: 1px solid var(--msty-rule);
+  transition: box-shadow 320ms ease;
+}
+/* Pinned state — chrome is fixed at viewport top while scrolling through the section.
+   z-index 95 beats the mobile sticky site header (z-index 90 at ≤720px); without
+   this the pinned chrome was painted behind the header and looked like it never
+   pinned at all. transform: translateZ(0) forces a compositing layer; iOS Safari
+   otherwise sometimes fails to repaint position:fixed + backdrop-filter combos
+   and the pinned chrome scrolls away with the page. */
+.msty__chrome.is-pinned{
+  position: fixed;
+  top: 0;
+  z-index: 95;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+/* Touch devices — replace the blur with a solid background. backdrop-filter
+   inside a position:fixed element is unreliable on iOS Safari (especially
+   when the URL bar collapses) and can leave the chrome behind the scrolled
+   content. Solid bg is more robust. */
+@media (hover: none){
+  .msty__chrome{
+    background: var(--msty-bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+/* Bottom state — chrome rests at the bottom of the section when scrolled past */
+.msty__chrome.is-bottom{
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  box-shadow: none;
+}
+/* Reserve top space inside the section so the first chapter isn't covered
+   by the absolutely-positioned chrome */
+.msty{ padding-top: var(--msty-chrome-h, 72px); }
+.msty__chrome-inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(16px, 3vw, 40px);
+}
+/* ─── Brand mark (left side of chrome) ─── */
+.msty__brand{
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  line-height: 1;
+}
+.msty__brand-eyebrow{
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--msty-muted);
+}
+.msty__brand-title{
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--msty-fg);
+  font-style: normal;
+}
+
+/* ─── Chapter tabs (right side of chrome) ─── */
+.msty__tabs{
+  display: flex;
+  gap: clamp(32px, 3.5vw, 56px);
+  align-items: flex-end;
+}
+.msty__tab{
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px 8px;
+  text-decoration: none;
+  padding-bottom: 6px;
+  min-width: 80px;
+  position: relative;
+  transition: transform 320ms cubic-bezier(.2, .7, .2, 1);
+}
+.msty__tab-num{ display: none; }   /* numbers removed from the chapter tabs */
+.msty__tab-name{
+  grid-row: 1;
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--msty-muted);
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 320ms ease;
+}
+.msty__tab-track{
+  grid-row: 2;
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background: color-mix(in srgb, var(--msty-fg) 12%, transparent);
+  border-radius: var(--r-s);
+  overflow: hidden;
+}
+.msty__tab-fill{
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 0%;
+  background: var(--teal);
+  border-radius: inherit;
+  transition: width 600ms cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Active state — bold number, dark name, full teal bar */
+.msty__tab.is-active .msty__tab-num{
+  color: var(--teal);
+}
+.msty__tab.is-active .msty__tab-name{
+  color: var(--msty-fg);
+}
+.msty__tab.is-active .msty__tab-fill{ width: 100%; }
+
+/* Past chapters keep the bar filled but in muted state */
+.msty__tab.is-past .msty__tab-fill{ width: 100%; background: color-mix(in srgb, var(--teal) 35%, transparent); }
+
+/* Hover state — gentle lift, slight color */
+.msty__tab:hover .msty__tab-name{ color: var(--msty-fg); }
+.msty__tab:hover .msty__tab-num{ color: var(--msty-fg); }
+
+/* Tablet (≤1023px): shrink the brand mark + tighten tab gaps so the
+   chrome row (brand + 3 chapter tabs) doesn't overflow horizontally.
+   Pull the underline track out of flow so the label centers against
+   the brand title — otherwise the track inflates the tab box and the
+   label drifts above the title's vertical center. */
+@media (max-width: 1023px){
+  .msty__brand-title{ font-size: 24px; }
+  .msty__brand{ gap: 10px; }
+  .msty__tabs{ gap: 24px; align-items: center; }
+  .msty__tab{ min-width: 0; padding-bottom: 0; }
+  .msty__tab-track{
+    max-width: 48px;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    margin-top: 0;
+  }
+}
+/* Mobile (≤767px): compact chrome — stack brand and chapter tabs so the
+   title, 'Qualität', and the chapter bar all start at the same left margin
+   (the page's 24px section gutter) instead of competing for one horizontal
+   row. Tabs remain a horizontal scroller for the four labels and keep the
+   desktop track + teal-fill animation (name above, underline below). */
+@media (max-width: 767px){
+  .msty__chrome-inner{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .msty__brand-title{ font-size: 18px; }
+  .msty__brand-eyebrow{ display: none; }
+  .msty__tabs{ gap: 22px; align-items: flex-end; width: 100%; }
+  .msty__tab{ min-width: 0; padding-bottom: 8px; }
+  .msty__tab-name{ display: block; font-size: 11px; letter-spacing: 0.04em; }
+  /* Full-label-width track (override the tablet 48px cap), back in normal
+     grid flow so the underline sits cleanly below the label like desktop. */
+  .msty__tab-track{
+    max-width: none;
+    position: relative;
+    top: auto;
+    margin-top: 8px;
+  }
+}
+
+/* ============== TRUST BAR — timeline of awards & proof ============== */
+.trustbar{
+  background: var(--white);
+  padding-block: clamp(56px, 6vw, 88px);
+}
+/* Suppress the shared hairline divider that styles-v2.css paints at the top */
+.trustbar::before{ display: none; content: none; }
+.trustbar__head{
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto clamp(32px, 4vw, 48px);
+}
+.trustbar h2 i{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+/* The rail: 6 items in a row, with a subtle hairline connecting them at icon level */
+.trustbar__rail{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: clamp(8px, 1vw, 16px);
+  position: relative;
+}
+.trustbar__rail::before{
+  /* The connecting timeline line — sits behind the icon nodes */
+  content: "";
+  position: absolute;
+  top: 56px;                                  /* aligned to vertical center of 112px icon */
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: var(--graphite-300);
+  z-index: 0;
+}
+
+/* Each item */
+.trustbar__item{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 clamp(4px, 0.6vw, 10px);
+  cursor: default;
+  outline: none;
+  /* No bottom gap — keeps the section's top and bottom padding symmetric
+     (the badge row sits the same distance from both edges). */
+  margin-bottom: 0;
+}
+
+/* Icon container — 3D flip card with front (logo) and back (context) */
+.trustbar__icon{
+  position: relative;
+  z-index: 2;
+  width: 112px;
+  height: 112px;
+  perspective: 1000px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.trustbar__face{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--white);
+  border: 1px solid var(--graphite-300);
+  border-radius: var(--r-l);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.05);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 600ms cubic-bezier(.2, .7, .2, 1),
+              box-shadow 320ms ease,
+              border-color 320ms ease;
+  /* No preserve-3d here: the faces are flat leaves, and forcing a 3D context
+     made Chrome rasterize them at CSS-pixel size (blurring the detailed NTV
+     seal on hi-DPI screens). The parent's perspective + backface-visibility
+     still drive the flip. */
+}
+.trustbar__face--front{
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+.trustbar__face--back{
+  z-index: 1;
+  transform: rotateY(180deg);
+  /* Same bg as the section underneath — back blends with the page, only
+     the teal border + content frames it as a flipped card */
+  background: var(--white);
+  border: 1px solid var(--teal);
+  color: var(--schwarz);
+  padding: 14px 12px;
+  text-align: center;
+  gap: 4px;
+}
+.trustbar__face--back strong{
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--teal);
+  letter-spacing: -0.005em;
+}
+.trustbar__face--back span{
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: #4a4a4a;
+}
+
+/* Linked-badge affordances (currently scoped to NTV only — opt-in via
+   the .trustbar__cue-text element in the markup).
+   Cue revealed only when the badge is in its flipped/hover/focus state
+   — keeps the front face clean while still making the link discoverable
+   the moment the user engages with the badge. */
+.trustbar__cue-text{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--teal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.trustbar__cue-text svg{ width: 12px; height: 12px; }
+.trustbar__item.is-flipped .trustbar__cue-text,
+.trustbar__item:hover .trustbar__cue-text,
+.trustbar__item:focus-within .trustbar__cue-text,
+.trustbar__item:focus-visible .trustbar__cue-text{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+/* Image inside the front face */
+.trustbar__face--front img,
+.trustbar__face--front svg{
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+}
+/* Per-badge optical balancing — every badge tuned to read visually as big
+   as the NTV stamp (which fills its viewBox edge-to-edge) */
+.trustbar__item:nth-child(1) .trustbar__face--front img{ width: 62px; height: 62px; } /* NTV — baseline */
+.trustbar__item:nth-child(2) .trustbar__face--front img{ width: 86px; height: 86px; } /* Vergleich */
+.trustbar__item:nth-child(3) .trustbar__face--front img{
+  /* Top Shop 3 Jahre — a hair larger than the NTV baseline (62px) keeps it
+     visually consistent with the smallest neighbouring badge. */
+  width: 64px; height: 64px;
+}
+.trustbar__item:nth-child(4) .trustbar__face--front img{ width: 86px; height: 86px; } /* Red Dot */
+.trustbar__item:nth-child(5) .trustbar__face--front img{ width: 94px; height: 94px; } /* Trusted Shops */
+.trustbar__item:nth-child(6) .trustbar__face--front img{ width: 94px; height: 94px; } /* Garantie */
+.trustbar__item:nth-child(7) .trustbar__face--front img{ width: 70px; height: 70px; } /* Customers — scaled down to match the visual mass of neighbouring badges */
+
+/* Timeline dots removed */
+.trustbar__node{ display: none; }
+
+/* Default text labels */
+.trustbar__title{
+  margin: clamp(20px, 2vw, 28px) 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--schwarz);
+  line-height: 1.3;
+}
+.trustbar__sub{
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: opacity 320ms ease;
+  /* Keep subtitle on one line on laptop+; allow wrap on mobile */
+  white-space: nowrap;
+}
+/* Tablet + mobile: 6 award badges don't fit in a clean row. Same approach
+   as the home page — a single-row swipeable rail with peek + scroll-snap
+   (no scrollbar). The hairline connector makes no sense in a scroller, so
+   hide it. */
+@media (max-width: 1279px){
+  .trustbar__rail{
+    display: flex;
+    flex-wrap: nowrap;
+    grid-template-columns: none;
+    gap: var(--sp-6);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;            /* Firefox */
+    /* Shadow room stays inside the rail (clipped by overflow-y: hidden),
+       but the negative margin cancels its layout height so the section's
+       top/bottom padding stays symmetric on tablet + mobile. */
+    padding-bottom: var(--sp-2);      /* room for the flip-card shadow */
+    margin-bottom: calc(-1 * var(--sp-2));
+    /* Match the section margin: viewport extends to the screen edge for
+       the arrows, so the rail content needs its own inset to keep badges
+       inside the page's 24px margin. */
+    padding-inline: clamp(var(--sp-6), 4vw, 56px);
+  }
+  .trustbar__rail::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
+  .trustbar__rail::before{ display: none; }
+  .trustbar__item{
+    /* Cap the slot width so badges stay close together on wider rails
+       (iPad Pro): a flat 30% basis made each slot ~278px while the badge
+       is only ~112px, leaving huge gaps. */
+    flex: 0 0 clamp(150px, 30%, 160px);
+    scroll-snap-align: start;         /* start-snap so the last badge doesn't need trailing space to center */
+    margin-bottom: 0;
+  }
+  .trustbar__sub{ white-space: normal; }
+}
+
+/* Tablet: without scroll-padding, mandatory snap aligns the first badge to the
+   scrollport edge and cancels the rail's padding-inline — pulling the badge
+   flush to the screen edge. Matching scroll-padding keeps the first badge on
+   the container content edge, consistent with the section below. */
+@media (min-width: 768px) and (max-width: 1279px){
+  .trustbar__rail{ scroll-padding-inline: clamp(var(--sp-6), 4vw, 56px); }
+}
+
+/* Hover / focus state — 3D flip card */
+.trustbar__item:hover,
+.trustbar__item:focus-visible{
+  z-index: 5;
+}
+/* Hover flip is scoped to devices that actually support hover so iOS/
+   Android don't keep a sticky :hover after a tap (which would block
+   the JS-driven tap-toggle from flipping the badge back). */
+@media (hover: hover){
+  .trustbar__item:hover .trustbar__face--front{ transform: rotateY(-180deg); }
+  .trustbar__item:hover .trustbar__face--back{
+    transform: rotateY(0deg);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+  }
+}
+.trustbar__item:focus-visible .trustbar__face--front,
+.trustbar__item.is-hinting .trustbar__face--front,
+.trustbar__item.is-flipped .trustbar__face--front{
+  transform: rotateY(-180deg);
+}
+.trustbar__item:focus-visible .trustbar__face--back,
+.trustbar__item.is-hinting .trustbar__face--back,
+.trustbar__item.is-flipped .trustbar__face--back{
+  transform: rotateY(0deg);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.18);
+}
+.trustbar__item:hover .trustbar__node,
+.trustbar__item:focus-visible .trustbar__node{
+  background: var(--teal);
+  box-shadow: 0 0 0 4px rgba(1, 82, 83, 0.12);
+  transform: translateX(-50%) scale(1.3);
+}
+
+/* ─── Linked badge (Red Dot → Sicherheit / XDM10 chapter) ───
+   Signals it's clickable: labels underline + a teal down-arrow reveals at the
+   bottom of the card on hover/focus; clicking scrolls to the section. */
+.trustbar__item--link{ cursor: pointer; }
+.trustbar__goto{
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  transform: translate(-50%, 6px);
+  z-index: 4;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;                 /* square frame */
+  background: var(--white);           /* outline style — not filled */
+  border: 1.5px solid var(--teal);
+  color: var(--teal);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2, .7, .2, 1);
+}
+.trustbar__goto svg{ width: 14px; height: 14px; display: block; }
+.trustbar__item--link:hover .trustbar__goto,
+.trustbar__item--link:focus-visible .trustbar__goto{
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+/* Land below the section's sticky chrome / with breathing room when scrolled to */
+#sicherheit{ scroll-margin-top: 96px; }
+#ausgezeichnet{ scroll-margin-top: 24px; }
+
+/* Mobile: same swipe rail, just narrower cards so one badge fills the
+   viewport with the next peeking in. Cards keep the vertical badge layout. */
+@media (max-width: 767px){
+  .trustbar__rail{ gap: var(--sp-2); }
+  .trustbar__item{
+    /* Narrower cards + minimal side padding pull the centered badges close
+       together (most of the old gap was empty card width, not the flex gap). */
+    flex: 0 0 44%;
+    min-width: 150px;
+    padding-inline: 2px;
+  }
+  /* Tap to flip — :active triggers the same flip as :hover on desktop.
+     User taps badge → flips to context; taps again → flips back. */
+  .trustbar__item:active .trustbar__face--front{ transform: rotateY(-180deg); }
+  .trustbar__item:active .trustbar__face--back{ transform: rotateY(0deg); }
+}
+
+/* Reduced motion — disable the 3D flip entirely; back face never shown */
+@media (prefers-reduced-motion: reduce){
+  .trustbar__face,
+  .trustbar__node{ transition: none !important; }
+  .trustbar__item:hover .trustbar__face--front,
+  .trustbar__item:focus-visible .trustbar__face--front{ transform: none; }
+  .trustbar__item:hover .trustbar__face--back,
+  .trustbar__item:focus-visible .trustbar__face--back{ transform: rotateY(180deg); }
+}
+
+/* ============== NEWSLETTER — soft promo before the closing CTA ============== */
+.news{
+  background: var(--white);   /* white — keeps the alternating rhythm (reviews G → news W → closing G) */
+  padding-block: clamp(56px, 6vw, 88px);
+}
+.news__inner{
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+.news__copy,
+.news__copy *{
+  text-align: center !important;
+}
+.news__eyebrow{
+  margin: 0 0 var(--sp-5);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--graphite-700, #54545C);
+  line-height: 1;
+}
+.news__title{
+  margin: 0 0 clamp(16px, 1.6vw, 22px);
+  font-size: var(--text-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--schwarz);
+}
+@media (min-width: 768px) and (max-width: 1023px){
+  .craft-headline, .news__title{ font-size: 2.25rem; }
+}
+@media (max-width: 767px){
+  .news__title{ font-size: 2rem; }
+}
+.news__title i{
+  font-style: normal;
+  font-weight: 700;
+  color: inherit;
+}
+.news__sub{
+  margin-top: 0;
+  margin-bottom: clamp(32px, 3.5vw, 48px);
+  margin-left: auto;
+  margin-right: auto;
+  font-size: var(--text-h4);
+  line-height: 1.6;
+  color: var(--schwarz);
+  /* No max-width — inherits the .news__inner 720px so it aligns
+     proportionally with the title above */
+  text-align: center !important;
+}
+
+/* Form — input + button inline */
+.news__form{
+  display: flex;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto clamp(20px, 2vw, 28px);
+  align-items: stretch;
+}
+.news__submit{ flex-shrink: 0; }
+.news__field{
+  flex: 1;
+  position: relative;
+  display: flex;
+}
+.news__label{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+/* Newsletter input — aligned with the DS .form-control pattern
+   (1px graphite-300 border, padding-based sizing, teal focus). */
+.news__input{
+  flex: 1;
+  padding: 0.8rem 1rem;        /* matches .form-control-lg in the DS */
+  font-size: 1.125rem;          /* 18px */
+  font-weight: 400;
+  color: var(--schwarz);
+  background: var(--white);
+  border: 1px solid var(--graphite-300);
+  border-radius: var(--r-m);
+  outline: none;
+  transition: border-color 0.15s ease;
+  font-family: inherit;
+  height: 3.125rem;             /* 50px — matches .btn-lg next to it */
+  box-sizing: border-box;
+}
+.news__input::placeholder{ color: var(--graphite-500); }
+.news__input:focus{ border-color: var(--teal); }
+
+/* Submit button is now plain .btn .btn-primary .btn-lg — no overrides needed. */
+
+/* Privacy note — small icon + line */
+.news__note{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.news__note svg{
+  color: #9a9a9a;
+  flex-shrink: 0;
+}
+
+/* Pre-submit hint — single quiet line below the form. Centered to match
+   the rest of the newsletter copy, sits in the same slot the old
+   'Ihre Daten bleiben bei uns' lock note used to occupy. */
+.news__hint{
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7a7a7a;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.news__inner.is-subscribed .news__hint{ display: none; }
+
+/* Post-submit confirmation — replaces the form after successful signup.
+   Light-blue info box, matches the reference screenshot. The explicit
+   [hidden] rule wins over `display: flex` so the banner stays hidden
+   until JS removes the attribute. */
+.news__success[hidden]{ display: none; }
+.news__success{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  background: #E7F3FB;
+  border: 1px solid #C9E2F3;
+  border-radius: var(--r-m, 4px);
+  color: #1B6FAE;
+  text-align: left;
+  max-width: 520px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms ease, transform 500ms cubic-bezier(.2,.7,.2,1);
+}
+.news__success.is-dismissing{
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.news__success-icon{
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #2C8DD2;
+}
+.news__success-text{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: inherit;
+}
+/* Subscribed state — hide the form + hint, show the success banner */
+.news__inner.is-subscribed .news__form{ display: none; }
+
+/* Mobile — stack form */
+@media (max-width: 767px){
+  .news__form{ flex-direction: column; gap: 10px; }
+  .news__submit{ width: 100%; justify-content: center; }
+  .news__input{ width: 100%; }
+}
+
+/* ============== SECTION 10 — CLOSING ============== */
+.about-closing{
+  /* Background handled by the alternating rhythm rule near the top (gray). */
+  color: var(--schwarz);
+  text-align: center;
+}
+/* Eyebrow above the headline */
+.about-closing .cta__eyebrow{
+  margin: 0 auto var(--sp-5) !important;
+  max-width: 600px;
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--graphite-700, #54545C);
+  line-height: 1;
+  text-align: center !important;
+}
+/* Headline color on light bg */
+.about-closing .section-title{ color: var(--schwarz); margin-bottom: var(--sp-3); }
+/* Accent on key phrase (upright, inherits title color) */
+.about-closing .section-title i{
+  font-style: normal;
+  font-weight: 700;
+  color: inherit;
+}
+.about-closing p{ color: var(--schwarz); }
+.about-closing__hours{
+  margin: clamp(16px, 1.7vw, 24px) auto 0 !important;
+  max-width: 600px;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted) !important;
+  text-align: center !important;
+}
+/* ─── Contact strip — light band between dark CTA and dark footer ─── */
+.contact-strip{
+  background: #FAFAF8;
+  border-top: 1px solid var(--graphite-300);
+  border-bottom: 1px solid var(--graphite-300);
+  padding-block: clamp(20px, 2vw, 28px);
+}
+.contact-strip__inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 48px);
+  flex-wrap: wrap;
+}
+.contact-strip__phone{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--schwarz);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  transition: color 220ms ease;
+}
+.contact-strip__phone:hover{ color: var(--teal); }
+.contact-strip__phone svg{
+  color: var(--teal);
+  flex-shrink: 0;
+}
+.contact-strip__trust{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 2vw, 28px);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.contact-strip__trust li{
+  position: relative;
+  padding-left: 16px;
+  white-space: nowrap;
+}
+.contact-strip__trust li::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: 0.65;
+}
+@media (max-width: 767px){
+  .contact-strip__inner{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .contact-strip__trust li{ white-space: normal; }
+}
+
+/* Phone number — refined link, bigger and clickable */
+.about-closing__phone{
+  display: inline-block;
+  margin-top: clamp(28px, 3vw, 40px);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 220ms ease;
+}
+.about-closing__phone:hover{ opacity: 0.82; }
+/* Trust pills row */
+.about-closing__trust{
+  list-style: none;
+  margin: clamp(18px, 2vw, 24px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 1.6vw, 22px);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+.about-closing__trust li{
+  position: relative;
+  padding-left: 20px;
+}
+.about-closing__trust li::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: color-mix(in srgb, #5BC4C0 70%, transparent);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+.about-closing__trust li:not(:last-child)::after{
+  content: "";
+  position: absolute;
+  right: -11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.about-closing p{
+  font-size: var(--text-h4);
+  opacity: .9;
+  max-width: 600px;
+  margin: 0 auto var(--sp-8);
+}
+.about-closing__buttons{
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: center !important;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-inline: auto;
+}
+.about-closing__buttons .btn{
+  min-width: 240px;
+  justify-content: center;
+}
+.about-closing__reassure{
+  margin-top: var(--sp-10);
+  font-size: var(--text-body-sm);
+  opacity: .75;
+  max-width: none;
+}
+
+/* ============== RESPONSIVE — grid collapses (contract: ≤1023 tablet, ≤767 mobile) ============== */
+@media (max-width: 1023px){
+  /* Story: carousel + copy stack into one column. minmax(0,1fr) lets the
+     track shrink below the carousel's intrinsic min-content width (a 1fr
+     track defaults to minmax(auto,1fr) and would otherwise blow out). */
+  .about-story__grid{
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(var(--sp-8), 4vw, var(--sp-12));
+  }
+  /* Stacked layout — drop the image-centering offset */
+  .about-story__copy{ margin-bottom: 0; }
+  /* Pillars: stay 3-up on tablet, just tighten the gutter */
+  .about-pillars__grid{ gap: clamp(var(--sp-6), 3vw, var(--sp-10)); }
+}
+@media (max-width: 767px){
+  /* Pillars: one column on phones */
+  .about-pillars__grid{ grid-template-columns: 1fr; gap: var(--sp-10); }
+}
+/* Shared footer: the 10-item legal-link row is flex:nowrap and overflows
+   the viewport below desktop width, forcing a page-wide horizontal
+   scrollbar. Let it wrap (scoped to this page's stylesheet). */
+@media (max-width: 1023px){
+  .footer__legal-links{
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-2) var(--sp-5);
+  }
+}
+
+/* ============== HERO V2 — full-bleed banner with overlay copy ==============
+   Used by index-v2.html only. Modeled on the Clearcover hero pattern:
+   single edge-to-edge photo, white text overlaid in the lower-left third,
+   thin teal rule between headline and sub-paragraph.
+   Does NOT touch the existing .about-hero rules. */
+.about-hero-v2{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  min-height: 420px;
+  max-height: 560px;
+  overflow: hidden;
+  background: #1A171B;
+}
+.about-hero-v2__photo{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+  display: block;
+  z-index: 0;
+}
+/* Soft dark scrim — heavier on the left where the copy sits, fading right */
+.about-hero-v2__scrim{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(10,10,12,0.82) 0%, rgba(10,10,12,0.70) 30%, rgba(10,10,12,0.46) 52%, rgba(10,10,12,0.16) 74%, rgba(10,10,12,0) 100%),
+    linear-gradient(180deg, rgba(10,10,12,0) 40%, rgba(10,10,12,0.22) 72%, rgba(10,10,12,0.58) 100%);
+}
+.about-hero-v2__copy{
+  position: absolute;
+  left: 0; right: 0;
+  /* Vertically centered in the banner */
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: var(--white);
+  max-width: var(--container);
+  /* Inherit the standard .container inset so the copy lines up with the rest
+     of the page margin (nav, trust strip, sections) — no custom padding. */
+}
+/* Match the V1 hero h1 exactly (same scale/leading/tracking) */
+.about-hero-v2__title{
+  margin: 0 0 var(--sp-8);
+  font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--white);
+}
+.about-hero-v2__title i{
+  font-style: italic;
+  font-weight: 700;
+  color: var(--white);
+}
+/* Keep the CTA pair sized like V1's column rather than the full banner width */
+.about-hero-v2 .about-hero__ctas{ max-width: 480px; }
+/* Thin horizontal teal rule between headline and sub — the Clearcover signature */
+.about-hero-v2__rule{
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: var(--teal);
+  margin: clamp(20px, 2vw, 28px) 0 clamp(20px, 1.6vw, 24px);
+}
+.about-hero-v2__sub{
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  line-height: 1.55;
+  color: #fff;
+  text-shadow: 0 1px 16px rgba(0,0,0,0.55);
+}
+
+@media (max-width: 768px){
+  .about-hero-v2{
+    aspect-ratio: 4 / 5;
+    min-height: 520px;
+  }
+  .about-hero-v2__title{ max-width: 14ch; }
+  .about-hero-v2__sub{ max-width: 38ch; }
+  .about-hero-v2__scrim{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.20) 35%, rgba(0,0,0,0.72) 100%);
+  }
+}
+
+/* ============== FOOTER GROUPS — Informationen / Service collapse on mobile only ==============
+   Desktop + tablet: wrapper uses display:contents so the two
+   .footer__group elements remain direct children of the footer__top
+   grid — markup and visual layout are unchanged.
+   Mobile (≤767px): the wrapper becomes a block container, removing the
+   grid's 40px row-gap between the two collapsibles so they stack
+   tightly as one accordion list. Borders sit between rows + top/bottom
+   of the list. */
+.footer__accordion{ display: contents; }
+@media (max-width: 767px){
+  .footer__accordion{
+    display: block;
+    grid-column: 1 / -1;
+  }
+  .footer__accordion .footer__group{
+    border-top: 1px solid rgba(255,255,255,0.10);
+    padding-block: var(--sp-4);
+  }
+  .footer__accordion .footer__group:last-child{
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+  }
+  .footer__group.is-collapsible > h4{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .footer__group-chevron{
+    width: 18px;
+    height: 18px;
+    color: var(--white);
+    transform: rotate(90deg);
+    transition: transform 220ms cubic-bezier(.2,.7,.2,1);
+    flex: 0 0 auto;
+  }
+  .footer__group.is-collapsible.is-open .footer__group-chevron{
+    transform: rotate(-90deg);
+  }
+  .footer__group.is-collapsible > .footer__links{ margin-top: var(--sp-3); }
+  .footer__group.is-collapsible:not(.is-open) > .footer__links{ display: none; }
+}
