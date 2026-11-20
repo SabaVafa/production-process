@@ -2058,7 +2058,11 @@ main.about .about-editorial__tier--bottom .section-title i{
   gap: 2px 8px;
   text-decoration: none;
   padding-bottom: 6px;
-  min-width: 80px;
+  /* No min-width: let each tab (and its underline track) hug the label.
+     An 80px floor made short labels — GRAVUR, MONTAGE, VERSAND — carry an
+     underline 14–25px wider than the word, so the progress rail read as
+     ragged. Hugging the label keeps every track aligned to its text. */
+  min-width: 0;
   position: relative;
   transition: transform 320ms cubic-bezier(.2, .7, .2, 1);
 }
@@ -2105,8 +2109,10 @@ main.about .about-editorial__tier--bottom .section-title i{
 }
 .msty__tab.is-active .msty__tab-fill{ width: 100%; }
 
-/* Past chapters keep the bar filled but in muted state */
-.msty__tab.is-past .msty__tab-fill{ width: 100%; background: color-mix(in srgb, var(--teal) 35%, transparent); }
+/* Past chapters keep the bar filled but in a muted, clearly-completed teal —
+   strong enough to separate "done" from the faint upcoming tracks so the row
+   reads as progress, still subordinate to the full-strength active bar. */
+.msty__tab.is-past .msty__tab-fill{ width: 100%; background: color-mix(in srgb, var(--teal) 50%, transparent); }
 
 /* Hover state — gentle lift, slight color */
 .msty__tab:hover .msty__tab-name{ color: var(--msty-fg); }
